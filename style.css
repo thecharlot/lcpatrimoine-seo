@@ -846,6 +846,7 @@ section { padding: 80px 0; scroll-margin-top: 140px; }
 .contact-detail .icon {
     width: 44px;
     height: 44px;
+    min-width: 44px;
     background: var(--bleu-nuit);
     border-radius: 10px;
     display: flex;
@@ -1051,5 +1052,5 @@ footer h4 {
     .sim-box { padding: 28px 20px; }
     .footer-grid { grid-template-columns: 1fr; }
     .service-card { padding: 24px 20px; }
-    .contact-detail { flex-wrap: wrap; }
+    .contact-detail { flex-wrap: nowrap; }
 }
