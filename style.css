@@ -756,10 +756,37 @@ section { padding: 80px 0; scroll-margin-top: 140px; }
     margin-top: 8px;
 }
 
+.sim-breakdown {
+    margin-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 16px;
+}
+
+.sim-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.92rem;
+}
+
+.sim-line span { color: rgba(255,255,255,0.7); }
+.sim-line strong { color: var(--or); }
+
+.sim-note {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.6);
+    font-style: italic;
+}
+
 .sim-result .disclaimer {
     color: rgba(255,255,255,0.5);
     font-size: 0.75rem;
-    margin-top: 12px;
+    margin-top: 16px;
     font-style: italic;
 }
 

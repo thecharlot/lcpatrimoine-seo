@@ -246,7 +246,7 @@
             <div class="section-header">
                 <div class="section-label">Outil gratuit</div>
                 <h2>Estimez votre économie d'impôt</h2>
-                <p>Simulation indicative en quelques clics.</p>
+                <p>Simulation indicative basée sur le barème 2025.</p>
             </div>
             <div class="sim-box">
                 <div class="sim-field">
@@ -265,15 +265,25 @@
                     </select>
                 </div>
                 <div class="sim-field">
-                    <label for="investissement">Budget d'investissement envisagé (&euro;)</label>
-                    <input type="number" id="investissement" placeholder="Ex : 200 000" min="0" step="5000">
+                    <label for="dispositif">Levier d'optimisation</label>
+                    <select id="dispositif">
+                        <option value="per">PER (Plan Épargne Retraite)</option>
+                        <option value="girardin">Girardin Industriel</option>
+                        <option value="fcpi">FCPI / FIP (Innovation / Proximité)</option>
+                        <option value="deficit">Déficit foncier</option>
+                    </select>
+                </div>
+                <div class="sim-field">
+                    <label for="investissement">Montant envisagé (&euro;)</label>
+                    <input type="number" id="investissement" placeholder="Ex : 10 000" min="0" step="1000">
                 </div>
                 <button class="btn-primary" style="width:100%" onclick="simuler()">Estimer mon économie</button>
                 <div class="sim-result" id="simResult">
                     <div class="amount" id="simAmount"></div>
                     <div class="detail" id="simDetail"></div>
-                    <div class="disclaimer">Estimation indicative. Non contractuel.</div>
-                    <a href="#contact" class="btn-primary" style="margin-top:18px;display:inline-block;">Affiner avec Carine</a>
+                    <div class="sim-breakdown" id="simBreakdown"></div>
+                    <div class="disclaimer">Estimation indicative basée sur le barème 2025. Non contractuel. Chaque situation est unique — contactez Carine pour une simulation personnalisée.</div>
+                    <a href="#contact" class="btn-primary" style="margin-top:18px;display:inline-block;">Simulation personnalisée gratuite</a>
                 </div>
             </div>
         </div>
@@ -439,22 +449,101 @@
         }
 
         // Simulateur
+        function calcImpot(revenu, parts) {
+            var q = revenu / parts, impot = 0;
+            var tranches = [
+                { seuil: 11294, taux: 0 },
+                { seuil: 28797, taux: 0.11 },
+                { seuil: 82341, taux: 0.30 },
+                { seuil: 177106, taux: 0.41 },
+                { seuil: Infinity, taux: 0.45 }
+            ];
+            var prev = 0;
+            for (var i = 0; i < tranches.length; i++) {
+                var t = tranches[i];
+                if (q <= t.seuil) { impot += (q - prev) * t.taux; break; }
+                impot += (t.seuil - prev) * t.taux;
+                prev = t.seuil;
+            }
+            return Math.max(0, Math.round(impot * parts));
+        }
+
+        function getTMI(revenu, parts) {
+            var q = revenu / parts;
+            if (q > 177106) return 45;
+            if (q > 82341) return 41;
+            if (q > 28797) return 30;
+            if (q > 11294) return 11;
+            return 0;
+        }
+
+        function fmt(n) { return Math.round(n).toLocaleString('fr-FR') + ' \u20ac'; }
+
         function simuler() {
             var revenu = parseFloat(document.getElementById('revenu').value);
             var parts = parseFloat(document.getElementById('situation').value);
             var invest = parseFloat(document.getElementById('investissement').value);
+            var dispo = document.getElementById('dispositif').value;
             if (!revenu || !invest) { alert('Veuillez remplir tous les champs.'); return; }
-            var quotient = revenu / parts, impot = 0;
-            if (quotient > 177106) impot = quotient * 0.45 - 22042.34;
-            else if (quotient > 82341) impot = quotient * 0.41 - 14950.90;
-            else if (quotient > 29373) impot = quotient * 0.30 - 5868.93;
-            else if (quotient > 11497) impot = quotient * 0.11 - 1264.67;
-            impot = Math.max(0, impot * parts);
-            var base = Math.min(invest, 300000);
-            var reduc = Math.round(base * 0.12 / 6);
-            var eco = Math.min(reduc, Math.round(impot));
-            document.getElementById('simAmount').textContent = eco.toLocaleString('fr-FR') + ' \u20ac / an';
-            document.getElementById('simDetail').textContent = 'Soit ' + (eco * 6).toLocaleString('fr-FR') + ' \u20ac sur 6 ans \u2014 Imp\u00f4t estim\u00e9 : ' + Math.round(impot).toLocaleString('fr-FR') + ' \u20ac/an';
+
+            var impotAvant = calcImpot(revenu, parts);
+            var tmi = getTMI(revenu, parts);
+            var eco = 0, detail = '', breakdown = '';
+
+            if (dispo === 'per') {
+                // PER : le versement est déductible du revenu imposable (plafonné à 10% du revenu, max 35 194€)
+                var plafond = Math.min(revenu * 0.10, 35194);
+                var versement = Math.min(invest, plafond);
+                var revenuApres = revenu - versement;
+                var impotApres = calcImpot(revenuApres, parts);
+                eco = impotAvant - impotApres;
+                detail = 'Économie dès la 1ère année grâce à la déduction de votre versement PER';
+                breakdown = '<div class="sim-line"><span>Votre TMI (tranche marginale)</span><strong>' + tmi + ' %</strong></div>'
+                    + '<div class="sim-line"><span>Impôt actuel estimé</span><strong>' + fmt(impotAvant) + '</strong></div>'
+                    + '<div class="sim-line"><span>Versement PER déductible</span><strong>' + fmt(versement) + '</strong></div>'
+                    + '<div class="sim-line"><span>Impôt après PER</span><strong>' + fmt(impotApres) + '</strong></div>'
+                    + (versement < invest ? '<div class="sim-note">Plafond de déduction atteint (' + fmt(plafond) + '). Le surplus de ' + fmt(invest - versement) + ' n\'est pas déductible cette année.</div>' : '');
+            }
+            else if (dispo === 'girardin') {
+                // Girardin : réduction d'impôt de 110% à 120% du montant investi (one-shot)
+                var reduc = Math.round(invest * 1.15);
+                eco = Math.min(reduc, impotAvant);
+                detail = 'Réduction d\'impôt en une seule année (Girardin Industriel)';
+                breakdown = '<div class="sim-line"><span>Votre impôt actuel</span><strong>' + fmt(impotAvant) + '</strong></div>'
+                    + '<div class="sim-line"><span>Investissement Girardin</span><strong>' + fmt(invest) + '</strong></div>'
+                    + '<div class="sim-line"><span>Réduction (~115% du montant)</span><strong>' + fmt(reduc) + '</strong></div>'
+                    + (reduc > impotAvant ? '<div class="sim-note">Réduction plafonnée à votre impôt. Gain réel : ' + fmt(impotAvant) + '</div>' : '');
+            }
+            else if (dispo === 'fcpi') {
+                // FCPI/FIP : réduction de 25% du montant investi, plafond 12 000€ (célibataire) ou 24 000€ (couple)
+                var plafond = parts >= 2 ? 24000 : 12000;
+                var base = Math.min(invest, plafond);
+                var reduc = Math.round(base * 0.25);
+                eco = Math.min(reduc, impotAvant);
+                detail = 'Réduction d\'impôt dès l\'année du versement';
+                breakdown = '<div class="sim-line"><span>Votre impôt actuel</span><strong>' + fmt(impotAvant) + '</strong></div>'
+                    + '<div class="sim-line"><span>Investissement FCPI/FIP</span><strong>' + fmt(invest) + '</strong></div>'
+                    + '<div class="sim-line"><span>Base retenue (plafond ' + fmt(plafond) + ')</span><strong>' + fmt(base) + '</strong></div>'
+                    + '<div class="sim-line"><span>Réduction (25%)</span><strong>' + fmt(reduc) + '</strong></div>'
+                    + (reduc > impotAvant ? '<div class="sim-note">Réduction plafonnée à votre impôt.</div>' : '');
+            }
+            else if (dispo === 'deficit') {
+                // Déficit foncier : déductible du revenu global jusqu'à 10 700€/an
+                var deductible = Math.min(invest, 10700);
+                var revenuApres = revenu - deductible;
+                var impotApres = calcImpot(revenuApres, parts);
+                eco = impotAvant - impotApres;
+                detail = 'Économie annuelle via imputation sur votre revenu global';
+                breakdown = '<div class="sim-line"><span>Votre TMI</span><strong>' + tmi + ' %</strong></div>'
+                    + '<div class="sim-line"><span>Impôt actuel estimé</span><strong>' + fmt(impotAvant) + '</strong></div>'
+                    + '<div class="sim-line"><span>Déficit imputable (max 10 700 \u20ac/an)</span><strong>' + fmt(deductible) + '</strong></div>'
+                    + '<div class="sim-line"><span>Impôt après déduction</span><strong>' + fmt(impotApres) + '</strong></div>'
+                    + (invest > 10700 ? '<div class="sim-note">Le surplus de ' + fmt(invest - 10700) + ' est reportable sur vos revenus fonciers des 10 années suivantes.</div>' : '');
+            }
+
+            document.getElementById('simAmount').textContent = fmt(eco) + ' d\'\u00e9conomie';
+            document.getElementById('simDetail').textContent = detail;
+            document.getElementById('simBreakdown').innerHTML = breakdown;
             var r = document.getElementById('simResult');
             r.classList.add('visible');
             r.scrollIntoView({ behavior: 'smooth', block: 'center' });
