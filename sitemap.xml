@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://www.lcpatrimoine.net/</loc>
+        <lastmod>2026-03-07</lastmod>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://www.lcpatrimoine.net/defiscalisation</loc>
+        <lastmod>2026-03-07</lastmod>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.lcpatrimoine.net/retraite</loc>
+        <lastmod>2026-03-07</lastmod>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.lcpatrimoine.net/assurance-emprunteur</loc>
+        <lastmod>2026-03-07</lastmod>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.lcpatrimoine.net/investissement</loc>
+        <lastmod>2026-03-07</lastmod>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.lcpatrimoine.net/mentions-legales</loc>
+        <lastmod>2026-03-07</lastmod>
+        <priority>0.3</priority>
+    </url>
+</urlset>
