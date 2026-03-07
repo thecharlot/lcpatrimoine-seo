@@ -1052,5 +1052,8 @@ footer h4 {
     .sim-box { padding: 28px 20px; }
     .footer-grid { grid-template-columns: 1fr; }
     .service-card { padding: 24px 20px; }
-    .contact-detail { flex-wrap: nowrap; }
+    .contact-detail { flex-wrap: nowrap; gap: 10px; }
+    .contact-detail .icon { width: 36px; height: 36px; min-width: 36px; }
+    .contact-detail .icon svg { width: 16px; height: 16px; }
+    .contact-detail span { font-size: 0.85rem; }
 }
