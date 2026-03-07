@@ -362,7 +362,7 @@ nav .container {
 }
 
 /* ─── Sections ─── */
-section { padding: 80px 0; scroll-margin-top: 125px; }
+section { padding: 80px 0; scroll-margin-top: 0px; }
 
 .section-header {
     text-align: center;
