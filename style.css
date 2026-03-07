@@ -1047,6 +1047,7 @@ footer h4 {
     .hero { padding: 120px 0 50px; }
     .page-hero h1 { font-size: 1.6rem; }
     .section-header h2 { font-size: 1.6rem; }
+    .apropos-title { font-size: 1.3rem !important; }
     section { padding: 60px 0; scroll-margin-top: 120px; }
     .logo img { height: 60px; }
     .nav-links { display: none; }
