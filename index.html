@@ -10,7 +10,7 @@
     <meta name="geo.region" content="FR-IDF">
     <meta name="geo.placename" content="Saint-Maur-des-Fossés">
     <link rel="canonical" href="https://www.lcpatrimoine.net">
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=5">
 
     <meta property="og:title" content="LC Patrimoine — Gestion de patrimoine en Île-de-France">
     <meta property="og:description" content="Cabinet indépendant. Défiscalisation, placements, retraite, succession. Bilan patrimonial gratuit.">
@@ -559,11 +559,16 @@
             f.innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:3rem;margin-bottom:16px">&#10004;</div><h3 style="color:var(--bleu-nuit);margin-bottom:12px">Merci !</h3><p style="color:var(--gris)">Carine vous recontacte sous 24h.</p></div>';
         }
 
-        // Smooth scroll
+        // Smooth scroll with nav offset
         document.querySelectorAll('a[href^="#"]').forEach(function(a) {
             a.addEventListener('click', function(e) {
                 var t = document.querySelector(this.getAttribute('href'));
-                if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+                if (t) {
+                    e.preventDefault();
+                    var navH = document.querySelector('nav').offsetHeight;
+                    var y = t.getBoundingClientRect().top + window.pageYOffset - navH;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                }
             });
         });
     </script>
