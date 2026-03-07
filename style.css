@@ -989,9 +989,8 @@ footer h4 {
 @media (max-width: 900px) {
     .hero { padding: 140px 0 60px; }
     .hero .container { grid-template-columns: 1fr; }
-    .hero h1 { text-align: center; }
-    .hero p { text-align: left; }
-    .hero-buttons { justify-content: center; }
+    .hero-content { text-align: left; }
+    .hero-buttons { justify-content: flex-start; }
     .hero-stats { max-width: 400px; margin: 40px auto 0; }
     .services-grid { grid-template-columns: 1fr 1fr; }
     .why-us .container { grid-template-columns: 1fr; }
@@ -1010,8 +1009,9 @@ footer h4 {
     #apropos .container > div[style*="grid-template-columns"] {
         grid-template-columns: 1fr !important;
     }
-    #apropos .about-photo { text-align: center; }
-    #apropos p { text-align: left; }
+    #apropos .about-photo { text-align: center; margin-bottom: 20px; }
+    #apropos div { text-align: left; }
+    #apropos .section-label { text-align: left; }
 }
 
 @media (max-width: 600px) {
