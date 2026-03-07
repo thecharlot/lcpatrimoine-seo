@@ -467,6 +467,20 @@ section { padding: 80px 0; }
     line-height: 1.6;
 }
 
+.service-link {
+    display: inline-block;
+    margin-top: 12px;
+    color: var(--or);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.service-link:hover {
+    color: var(--bleu-nuit);
+}
+
 /* ─── Content page ─── */
 .page-content {
     padding: 80px 0;
