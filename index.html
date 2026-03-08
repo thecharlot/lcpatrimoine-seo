@@ -626,8 +626,8 @@
                     + '<div class="sim-line"><span>Investissement Girardin</span><strong>' + fmt(invest) + '</strong></div>'
                     + '<div class="sim-line"><span>Mois d\'investissement</span><strong>' + moisNoms[mois] + '</strong></div>'
                     + '<div class="sim-line"><span>Réduction (' + tauxPct + '% du montant)</span><strong>' + fmt(reduc) + '</strong></div>'
-                    + (reduc > impotAvant ? '<div class="sim-note">Réduction plafonnée à votre impôt. Gain réel : ' + fmt(impotAvant) + '</div>' : '')
-                    + '<div class="sim-note">Le Girardin Industriel est hors plafonnement des niches fiscales (avantage spécifique de ce dispositif).</div>';
+                    + (reduc > impotAvant ? '<div class="sim-note">Bonne nouvelle : l\'exc\u00e9dent de ' + fmt(reduc - impotAvant) + ' non utilis\u00e9 cette ann\u00e9e est reportable sur les 5 ann\u00e9es suivantes. Votre \u00e9conomie totale peut donc atteindre ' + fmt(reduc) + '. Contactez-nous pour optimiser ce report.</div>' : '')
+                    + '<div class="sim-note">Le Girardin Industriel est hors plafonnement des niches fiscales (avantage sp\u00e9cifique de ce dispositif).</div>';
             }
             else if (dispo === 'gfi') {
                 // GFI : réduction 18%, plafond 50 000€ (célib) / 100 000€ (couple)
