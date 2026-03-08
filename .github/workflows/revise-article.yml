@@ -32,6 +32,9 @@ jobs:
           ref: ${{ steps.pr.outputs.branch }}
           fetch-depth: 0
 
+      - name: Use latest scripts from main
+        run: git checkout origin/main -- scripts/
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
