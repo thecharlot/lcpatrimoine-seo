@@ -71,7 +71,7 @@ def download_unsplash_image(query, slug):
     return img_path
 
 
-def generate_article_html(title, slug, meta_description, breadcrumb_short, body_html, pub_date):
+def generate_article_html(title, slug, meta_description, breadcrumb_short, body_html, pub_date, has_image=False):
     """Generate the full HTML page for a blog article."""
     return f'''<!DOCTYPE html>
 <html lang="fr">
@@ -136,6 +136,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
 
     <section class="page-content">
         <div class="container">
+{'            <img src="img/' + slug + '.jpg" alt="' + title + '" style="width:100%;max-height:400px;object-fit:cover;border-radius:12px;margin-bottom:2rem;">' if has_image else ''}
 {body_html}
 
             <div class="cta-box">
@@ -328,7 +329,8 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
 
     # 4. Write article HTML
     article_html = generate_article_html(
-        title, slug, meta_description, breadcrumb_short, body_html, today
+        title, slug, meta_description, breadcrumb_short, body_html, today,
+        has_image=img_path is not None,
     )
     article_path = f"{BLOG_DIR}/{slug}.html"
     with open(article_path, "w", encoding="utf-8") as f:
