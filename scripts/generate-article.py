@@ -341,7 +341,11 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
     # 6. Update sitemap.xml
     update_sitemap(slug, today)
 
-    # 7. Write PR description for the workflow
+    # 7. Write slug for the workflow (used to build preview link)
+    with open("article-slug.txt", "w", encoding="utf-8") as f:
+        f.write(slug)
+
+    # 8. Write PR description for the workflow
     pr_body = f"""## Nouvel article de blog
 
 **Titre** : {title}
