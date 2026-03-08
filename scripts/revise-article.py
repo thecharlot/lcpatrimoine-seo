@@ -38,30 +38,38 @@ def find_new_article():
 
 
 def extract_image_url(comment):
-    """Check if the comment is an image replacement command.
+    """Check if the comment contains an image URL to replace.
 
-    Supported formats:
-        image: https://example.com/photo.jpg
-        image https://example.com/photo.jpg
-        image: https://example.com/photo  (sans extension, on tente quand même)
-        https://example.com/photo.jpg  (URL brute avec extension image)
+    Détecte une URL d'image dans le commentaire, que ce soit :
+    - "image: URL"
+    - "change l'image URL"
+    - "URL" tout seul
+    - n'importe quel texte contenant une URL d'image
     """
     comment = comment.strip()
 
-    # "image:" prefix → on prend n'importe quelle URL qui suit
-    m = re.match(r'^image\s*:?\s*(https?://\S+)', comment, re.IGNORECASE)
-    if m:
-        return m.group(1)
+    # Cherche toute URL dans le commentaire
+    urls = re.findall(r'(https?://\S+)', comment)
+    if not urls:
+        return None
 
-    # URL brute seule (avec extension image ou domaine connu de banques d'images)
-    if re.match(r'^https?://\S+$', comment, re.IGNORECASE):
-        url = comment.strip()
+    for url in urls:
+        # Nettoie les caractères de ponctuation en fin d'URL
+        url = url.rstrip('.,;:!?)>]')
+
+        # URL avec extension image → c'est une image
+        if re.search(r'\.(jpg|jpeg|png|webp|gif)(\?\S*)?$', url, re.IGNORECASE):
+            return url
+
+        # Domaine connu de banque d'images → c'est une image
         image_domains = ['unsplash.com', 'images.unsplash.com', 'pexels.com', 'images.pexels.com',
-                         'pixabay.com', 'cdn.pixabay.com', 'img.freepik.com']
+                         'pixabay.com', 'cdn.pixabay.com', 'img.freepik.com', 'i.imgur.com']
         if any(d in url for d in image_domains):
             return url
-        if re.search(r'\.(jpg|jpeg|png|webp)(\?\S*)?$', url, re.IGNORECASE):
-            return url
+
+    # Si le commentaire parle d'image et contient une URL, on tente
+    if re.search(r'image|photo|illustration|visuel', comment, re.IGNORECASE) and urls:
+        return urls[0].rstrip('.,;:!?)>]')
 
     return None
 
@@ -151,6 +159,7 @@ def main():
 ```
 
 Applique les modifications demandées par Carine. Garde le même format HTML, la même structure, le même ton.
+**IMPORTANT** : Ne modifie JAMAIS les balises <img src="...">. Les images sont gérées séparément. Ne remplace jamais un src local (img/...) par une URL externe.
 
 Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant :
 - "article_html": l'article HTML complet modifié
