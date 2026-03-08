@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  issues: read
+  issues: write
 
 jobs:
   revise:
@@ -24,7 +24,6 @@ jobs:
         run: |
           PR_DATA=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
           echo "branch=$(echo $PR_DATA | jq -r '.head.ref')" >> $GITHUB_OUTPUT
-          echo "sha=$(echo $PR_DATA | jq -r '.head.sha')" >> $GITHUB_OUTPUT
 
       - name: Checkout PR branch
         uses: actions/checkout@v4
@@ -49,12 +48,27 @@ jobs:
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: python scripts/revise-article.py
 
+      - name: Read article slug
+        id: slug
+        run: |
+          if [ -f article-slug.txt ]; then
+            echo "value=$(cat article-slug.txt)" >> $GITHUB_OUTPUT
+          else
+            # Fallback: find new article via git diff
+            SLUG=$(git diff --name-only --diff-filter=A origin/main HEAD -- 'blog/*.html' | head -1 | sed 's|blog/||;s|\.html||')
+            echo "value=$SLUG" >> $GITHUB_OUTPUT
+          fi
+
       - name: Commit and push changes
         id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
+          # Remove temp files before committing
+          rm -f article-slug.txt
+          # Don't commit scripts from main into the PR branch
+          git checkout -- scripts/ 2>/dev/null || true
+          git add blog/
           CHANGES=$(git diff --cached --name-only)
           if [ -n "$CHANGES" ]; then
             git commit -m "revision: applique les modifications demandées"
@@ -63,15 +77,6 @@ jobs:
             echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Read article slug
-        if: steps.commit.outputs.changed == 'true'
-        id: slug
-        run: |
-          if [ -f article-slug.txt ]; then
-            echo "value=$(cat article-slug.txt)" >> $GITHUB_OUTPUT
-            rm article-slug.txt
           fi
 
       - name: Comment PR with preview link
