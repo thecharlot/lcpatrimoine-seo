@@ -742,6 +742,20 @@
                 }
             });
         });
+
+        // Fix cross-page anchor navigation (ex: blog.html → index.html#simulateur)
+        if (window.location.hash) {
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    var target = document.querySelector(window.location.hash);
+                    if (target) {
+                        var navH = document.querySelector('nav').offsetHeight;
+                        var y = target.getBoundingClientRect().top + window.pageYOffset - navH;
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                    }
+                }, 150);
+            });
+        }
     </script>
 </body>
 </html>
