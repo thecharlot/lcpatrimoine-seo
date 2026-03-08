@@ -43,18 +43,25 @@ def extract_image_url(comment):
     Supported formats:
         image: https://example.com/photo.jpg
         image https://example.com/photo.jpg
-        https://example.com/photo.jpg  (if the comment is just a URL ending in image extension)
+        image: https://example.com/photo  (sans extension, on tente quand même)
+        https://example.com/photo.jpg  (URL brute avec extension image)
     """
     comment = comment.strip()
 
-    # "image: URL" or "image URL"
+    # "image:" prefix → on prend n'importe quelle URL qui suit
     m = re.match(r'^image\s*:?\s*(https?://\S+)', comment, re.IGNORECASE)
     if m:
         return m.group(1)
 
-    # Just a bare image URL
-    if re.match(r'^https?://\S+\.(jpg|jpeg|png|webp)(\?\S*)?$', comment, re.IGNORECASE):
-        return comment
+    # URL brute seule (avec extension image ou domaine connu de banques d'images)
+    if re.match(r'^https?://\S+$', comment, re.IGNORECASE):
+        url = comment.strip()
+        image_domains = ['unsplash.com', 'images.unsplash.com', 'pexels.com', 'images.pexels.com',
+                         'pixabay.com', 'cdn.pixabay.com', 'img.freepik.com']
+        if any(d in url for d in image_domains):
+            return url
+        if re.search(r'\.(jpg|jpeg|png|webp)(\?\S*)?$', url, re.IGNORECASE):
+            return url
 
     return None
 
