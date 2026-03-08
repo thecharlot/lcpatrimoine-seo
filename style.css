@@ -129,6 +129,15 @@ nav .container {
 
 .nav-cta:hover { background: var(--or-clair) !important; }
 
+.nav-linkedin {
+    display: flex;
+    align-items: center;
+    color: rgba(255,255,255,0.6) !important;
+    transition: color 0.3s !important;
+}
+
+.nav-linkedin:hover { color: #0A66C2 !important; }
+
 .menu-toggle {
     display: none;
     background: none;
