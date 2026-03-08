@@ -1,0 +1,64 @@
+name: Generate Blog Article
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # Lundi 8h UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Generate article
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+        run: python scripts/generate-article.py
+
+      - name: Read PR description
+        id: pr_body
+        run: |
+          if [ -f pr-description.md ]; then
+            echo "body<<EOF" >> $GITHUB_OUTPUT
+            cat pr-description.md >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            rm pr-description.md
+          else
+            echo "body=Nouvel article de blog généré automatiquement." >> $GITHUB_OUTPUT
+          fi
+
+      - name: Read article title
+        id: title
+        run: |
+          if [ -f article-title.txt ]; then
+            echo "title=$(cat article-title.txt)" >> $GITHUB_OUTPUT
+            rm article-title.txt
+          else
+            echo "title=Nouvel article de blog" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "blog: ${{ steps.title.outputs.title }}"
+          branch: blog/${{ github.run_id }}
+          title: "📝 ${{ steps.title.outputs.title }}"
+          body: ${{ steps.pr_body.outputs.body }}
+          labels: blog-post
+          reviewers: CarineSavajols
