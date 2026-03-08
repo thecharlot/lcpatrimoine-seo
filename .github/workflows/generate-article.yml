@@ -61,4 +61,3 @@ jobs:
           title: "📝 ${{ steps.title.outputs.title }}"
           body: ${{ steps.pr_body.outputs.body }}
           labels: blog-post
-          reviewers: CarineSavajols
