@@ -5,6 +5,7 @@ import os
 import re
 import json
 import glob
+import xml.etree.ElementTree as ET
 from datetime import date
 
 import anthropic
@@ -22,9 +23,41 @@ STYLE_VERSION = "23"
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 UNSPLASH_ACCESS_KEY = os.environ.get("UNSPLASH_ACCESS_KEY", "")
 
+# Flux RSS de sites financiers français pour récupérer l'actualité
+RSS_FEEDS = [
+    "https://www.lesechos.fr/rss/patrimoine.xml",
+    "https://www.capital.fr/votre-argent/feed",
+    "https://www.lefigaro.fr/rss/figaro_placement.xml",
+    "https://www.moneyvox.fr/rss/actu.xml",
+]
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+def fetch_recent_headlines():
+    """Fetch recent headlines from French financial RSS feeds."""
+    headlines = []
+    for feed_url in RSS_FEEDS:
+        try:
+            resp = requests.get(feed_url, timeout=10)
+            resp.raise_for_status()
+            root = ET.fromstring(resp.content)
+            # RSS 2.0 format
+            for item in root.findall(".//item")[:5]:
+                title_el = item.find("title")
+                if title_el is not None and title_el.text:
+                    headlines.append(title_el.text.strip())
+        except Exception as e:
+            print(f"Warning: could not fetch {feed_url}: {e}")
+    # Deduplicate and limit
+    seen = set()
+    unique = []
+    for h in headlines:
+        if h not in seen:
+            seen.add(h)
+            unique.append(h)
+    return unique[:20]
 
 def get_existing_articles():
     """Return list of (slug, title) for all existing blog articles."""
@@ -289,23 +322,37 @@ def main():
     existing_info = "\n".join(f"- {slug}: {title}" for slug, title in existing)
     print(f"Found {len(existing)} existing articles.")
 
-    # 2. Call Claude to generate article content
+    # 2. Fetch recent news headlines
+    print("Fetching recent financial headlines...")
+    headlines = fetch_recent_headlines()
+    if headlines:
+        headlines_text = "\n".join(f"- {h}" for h in headlines)
+        print(f"Found {len(headlines)} headlines.")
+    else:
+        headlines_text = "(aucun titre récupéré)"
+        print("Warning: no headlines fetched.")
+
+    # 3. Call Claude to generate article content
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
     topic_hint = os.environ.get("TOPIC_HINT", "").strip()
 
     topic_instruction = (
         f'**Thème demandé** : {topic_hint}\nÉcris l\'article sur ce thème en faisant le lien avec les solutions patrimoniales de Carine.'
         if topic_hint
-        else '**Mission** : Rédige un nouvel article de blog (800-1200 mots) en partant d\'une actualité récente (nationale ou internationale) et en faisant le lien avec les solutions patrimoniales que Carine propose.'
+        else '**Mission** : Choisis UNE actualité parmi les titres récents ci-dessous et rédige un article de blog (800-1200 mots) qui fait le lien avec les solutions patrimoniales que Carine propose.'
     )
 
     prompt = f"""Tu es le rédacteur du blog de LC Patrimoine (lcpatrimoine.net), cabinet indépendant de gestion de patrimoine en Île-de-France dirigé par Carine Savajols.
 
 {topic_instruction}
 
+**Actualités récentes (titres réels du jour)** :
+{headlines_text}
+
 **Domaines** : défiscalisation, investissement, retraite, transmission, assurance emprunteur.
 **Outils à mettre en avant** : PER, Girardin, GFI, Denormandie, assurance-vie, SCPI, contrat de capitalisation, LMNP, démembrement, SCI, assurance emprunteur.
 **Ton** : accessible, concret, professionnel mais pas jargonneux. Tu tutoies pas le lecteur, tu le vouvoies.
+**IMPORTANT** : Nous sommes en {today[:4]}. Ne fais JAMAIS référence à des événements d'années passées comme s'ils étaient actuels.
 
 **Articles existants (à ne pas répéter ni trop chevaucher)** :
 {existing_info}
