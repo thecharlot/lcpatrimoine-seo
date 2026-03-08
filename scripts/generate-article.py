@@ -41,15 +41,33 @@ def get_existing_articles():
     return articles
 
 
-def download_unsplash_image(query, slug):
-    """Download an image from Unsplash and save it to blog/img/."""
+def download_image(slug, query="", forced_url=""):
+    """Download an image and save it to blog/img/.
+
+    If forced_url is provided, download from that URL directly.
+    Otherwise, search Unsplash with the given query.
+    """
+    os.makedirs(f"{BLOG_DIR}/img", exist_ok=True)
+    img_path = f"{BLOG_DIR}/img/{slug}.jpg"
+
+    # Option 1: forced image URL
+    if forced_url:
+        print(f"Downloading forced image: {forced_url}")
+        img_resp = requests.get(forced_url, timeout=30)
+        img_resp.raise_for_status()
+        with open(img_path, "wb") as f:
+            f.write(img_resp.content)
+        print(f"Image saved: {img_path}")
+        return img_path
+
+    # Option 2: Unsplash search
     if not UNSPLASH_ACCESS_KEY:
         print("UNSPLASH_ACCESS_KEY not set, skipping image download.")
         return None
 
     resp = requests.get(
         "https://api.unsplash.com/search/photos",
-        params={"query": query, "per_page": 1, "orientation": "landscape"},
+        params={"query": query, "per_page": 5, "orientation": "landscape", "content_filter": "high"},
         headers={"Authorization": f"Client-ID {UNSPLASH_ACCESS_KEY}"},
         timeout=15,
     )
@@ -59,12 +77,11 @@ def download_unsplash_image(query, slug):
         print(f"No Unsplash image found for '{query}'.")
         return None
 
+    # Pick first photo that looks like a real photo (skip illustrations)
     img_url = results[0]["urls"]["regular"]
     img_resp = requests.get(img_url, timeout=30)
     img_resp.raise_for_status()
 
-    os.makedirs(f"{BLOG_DIR}/img", exist_ok=True)
-    img_path = f"{BLOG_DIR}/img/{slug}.jpg"
     with open(img_path, "wb") as f:
         f.write(img_resp.content)
     print(f"Image saved: {img_path}")
@@ -302,7 +319,7 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
 - "breadcrumb_short": mot-clé court pour le fil d'Ariane (ex: "PER", "SCPI", "Retraite")
 - "summary": résumé pour la carte blog (1-2 phrases, max 200 caractères)
 - "body_html": le contenu HTML de l'article (utilise h2, p, ul/li, strong, div class="highlight-box" pour les astuces). Indente avec 12 espaces.
-- "image_query": mot-clé en anglais pour chercher une image Unsplash pertinente (ex: "retirement savings", "real estate investment")
+- "image_query": 2-3 mots-clés en anglais pour Unsplash. Cherche une VRAIE PHOTO (pas d'illustration ni d'IA) : paysage urbain, bureau, famille, immobilier, etc. Sois concret et visuel (ex: "paris apartment building", "family financial planning", "office meeting documents")
 - "linkedin_post": post LinkedIn de teasing (1-2 phrases, ton personnel comme si Carine écrivait, avec un lien vers l'article sous la forme {SITE_URL}/blog/[slug]). Max 300 caractères. Ajoute 2-3 hashtags pertinents."""
 
     print("Calling Claude API...")
@@ -331,8 +348,9 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
 
     print(f"Article generated: {title} ({slug})")
 
-    # 3. Download image from Unsplash
-    img_path = download_unsplash_image(image_query, slug)
+    # 3. Download image
+    forced_image = os.environ.get("IMAGE_URL", "").strip()
+    img_path = download_image(slug, query=image_query, forced_url=forced_image)
 
     # 4. Write article HTML
     article_html = generate_article_html(

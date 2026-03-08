@@ -9,6 +9,10 @@ on:
         description: 'Thème ou angle souhaité (laisser vide = choix automatique)'
         required: false
         default: ''
+      image_url:
+        description: 'URL directe d une image (laisser vide = recherche Unsplash automatique)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -34,6 +38,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
           TOPIC_HINT: ${{ github.event.inputs.topic }}
+          IMAGE_URL: ${{ github.event.inputs.image_url }}
         run: python scripts/generate-article.py
 
       - name: Read article metadata
