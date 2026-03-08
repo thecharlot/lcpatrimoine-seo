@@ -145,7 +145,7 @@
                         <div class="service-icon" style="font-size:1.4rem; font-weight:800;">€</div>
                         <h3>Payer moins d'impôts</h3>
                     </div>
-                    <p>Girardin, PER, FCPI... Des dispositifs légaux existent pour réduire votre impôt. On identifie ceux qui sont faits pour vous.</p>
+                    <p>Girardin, PER, Malraux... Des dispositifs légaux existent pour réduire votre impôt. On identifie ceux qui sont faits pour vous.</p>
                     <a href="defiscalisation.html" class="service-link">En savoir plus →</a>
                 </div>
                 <div class="service-card">
@@ -153,7 +153,7 @@
                         <div class="service-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
                         <h3>Mieux placer son épargne</h3>
                     </div>
-                    <p>Assurance-vie, PEA, SCPI... On audite vos placements actuels et on vous propose mieux, en fonction de votre profil.</p>
+                    <p>Assurance-vie, SCPI, contrats de capitalisation... On audite vos placements actuels et on vous propose mieux, en fonction de votre profil.</p>
                     <a href="investissement.html" class="service-link">En savoir plus →</a>
                 </div>
                 <div class="service-card">
@@ -283,7 +283,7 @@
                     <select id="dispositif">
                         <option value="per">PER (Plan Épargne Retraite)</option>
                         <option value="girardin">Girardin Industriel</option>
-                        <option value="fcpi">FCPI / FIP (Innovation / Proximité)</option>
+                        <option value="malraux">Malraux / Monument historique</option>
                         <option value="deficit">Déficit foncier</option>
                     </select>
                 </div>
@@ -565,17 +565,17 @@
                     + '<div class="sim-line"><span>Réduction (~115% du montant)</span><strong>' + fmt(reduc) + '</strong></div>'
                     + (reduc > impotAvant ? '<div class="sim-note">Réduction plafonnée à votre impôt. Gain réel : ' + fmt(impotAvant) + '</div>' : '');
             }
-            else if (dispo === 'fcpi') {
-                // FCPI/FIP : réduction de 25% du montant investi, plafond 12 000€ (célibataire) ou 24 000€ (couple)
-                var plafond = parts >= 2 ? 24000 : 12000;
+            else if (dispo === 'malraux') {
+                // Malraux : réduction de 22% à 30% des travaux, plafond 400 000€ sur 4 ans
+                var plafond = 400000;
                 var base = Math.min(invest, plafond);
-                var reduc = Math.round(base * 0.25);
+                var reduc = Math.round(base * 0.22);
                 eco = Math.min(reduc, impotAvant);
-                detail = 'Réduction d\'impôt dès l\'année du versement';
+                detail = 'Réduction d\'impôt sur le montant des travaux (taux de 22 % — jusqu\'à 30 % en secteur sauvegardé)';
                 breakdown = '<div class="sim-line"><span>Votre impôt actuel</span><strong>' + fmt(impotAvant) + '</strong></div>'
-                    + '<div class="sim-line"><span>Investissement FCPI/FIP</span><strong>' + fmt(invest) + '</strong></div>'
+                    + '<div class="sim-line"><span>Montant des travaux Malraux</span><strong>' + fmt(invest) + '</strong></div>'
                     + '<div class="sim-line"><span>Base retenue (plafond ' + fmt(plafond) + ')</span><strong>' + fmt(base) + '</strong></div>'
-                    + '<div class="sim-line"><span>Réduction (25%)</span><strong>' + fmt(reduc) + '</strong></div>'
+                    + '<div class="sim-line"><span>Réduction (22%)</span><strong>' + fmt(reduc) + '</strong></div>'
                     + (reduc > impotAvant ? '<div class="sim-note">Réduction plafonnée à votre impôt.</div>' : '');
             }
             else if (dispo === 'deficit') {
