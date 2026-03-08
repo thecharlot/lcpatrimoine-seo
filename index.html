@@ -262,7 +262,7 @@
             <div class="section-header">
                 <div class="section-label">Outil gratuit</div>
                 <h2>Estimez votre économie d'impôt</h2>
-                <p>Simulation indicative basée sur le barème 2025.</p>
+                <p>Simulation indicative basée sur le barème 2026.</p>
             </div>
             <div class="sim-box">
                 <div class="sim-field">
@@ -272,12 +272,14 @@
                 <div class="sim-field">
                     <label for="situation">Situation familiale</label>
                     <select id="situation">
-                        <option value="1">Célibataire sans enfant</option>
-                        <option value="1.5">Célibataire avec 1 enfant</option>
-                        <option value="2">Couple sans enfant</option>
-                        <option value="2.5">Couple avec 1 enfant</option>
-                        <option value="3">Couple avec 2 enfants</option>
-                        <option value="3.5">Couple avec 3 enfants</option>
+                        <option value="s-1">Célibataire sans enfant</option>
+                        <option value="s-1.5">Célibataire avec 1 enfant</option>
+                        <option value="s-2">Célibataire avec 2 enfants</option>
+                        <option value="s-3">Célibataire avec 3 enfants</option>
+                        <option value="c-2">Couple sans enfant</option>
+                        <option value="c-2.5">Couple avec 1 enfant</option>
+                        <option value="c-3">Couple avec 2 enfants</option>
+                        <option value="c-4">Couple avec 3 enfants</option>
                     </select>
                 </div>
                 <div class="sim-field">
@@ -315,7 +317,7 @@
                     <div class="amount" id="simAmount"></div>
                     <div class="detail" id="simDetail"></div>
                     <div class="sim-breakdown" id="simBreakdown"></div>
-                    <div class="disclaimer">Estimation indicative basée sur le barème 2025. Non contractuel. Chaque situation est unique — contactez-nous pour une simulation personnalisée.</div>
+                    <div class="disclaimer">Estimation indicative basée sur le barème 2026. Non contractuel. Chaque situation est unique — contactez-nous pour une simulation personnalisée.</div>
                     <a href="#contact" class="btn-primary" style="margin-top:18px;display:inline-block;">Simulation personnalisée gratuite</a>
                 </div>
             </div>
@@ -518,15 +520,15 @@
             if (!wasOpen) item.classList.add('open');
         }
 
-        // Simulateur
+        // Simulateur — barème 2026 (revenus 2025), LFI du 19/02/2026
         var TRANCHES = [
-            { seuil: 11497, taux: 0 },
-            { seuil: 29315, taux: 0.11 },
-            { seuil: 83823, taux: 0.30 },
-            { seuil: 180294, taux: 0.41 },
+            { seuil: 11600, taux: 0 },
+            { seuil: 29579, taux: 0.11 },
+            { seuil: 84577, taux: 0.30 },
+            { seuil: 181917, taux: 0.41 },
             { seuil: Infinity, taux: 0.45 }
         ];
-        var PLAFOND_QF = 1759; // par demi-part supplémentaire (barème 2025)
+        var PLAFOND_QF = 1807; // par demi-part supplémentaire (barème 2026)
 
         function calcImpotBrut(revenu, parts) {
             var q = revenu / parts, impot = 0, prev = 0;
@@ -539,9 +541,8 @@
             return Math.round(impot * parts);
         }
 
-        function calcImpot(revenu, parts) {
-            // Parts de référence : 1 pour célibataire, 2 pour couple
-            var partsRef = parts >= 2 ? 2 : 1;
+        function calcImpot(revenu, parts, isCouple) {
+            var partsRef = isCouple ? 2 : 1;
             var demiPartsSupp = (parts - partsRef) / 0.5;
             if (demiPartsSupp <= 0) return Math.max(0, calcImpotBrut(revenu, parts));
             var impotAvecQF = calcImpotBrut(revenu, parts);
@@ -556,10 +557,10 @@
 
         function getTMI(revenu, parts) {
             var q = revenu / parts;
-            if (q > 180294) return 45;
-            if (q > 83823) return 41;
-            if (q > 29315) return 30;
-            if (q > 11497) return 11;
+            if (q > 181917) return 45;
+            if (q > 84577) return 41;
+            if (q > 29579) return 30;
+            if (q > 11600) return 11;
             return 0;
         }
 
@@ -570,14 +571,23 @@
             document.getElementById('moisInvestField').style.display = (dispo === 'girardin') ? '' : 'none';
         }
 
+        function parseSituation() {
+            var val = document.getElementById('situation').value;
+            var isCouple = val.charAt(0) === 'c';
+            var parts = parseFloat(val.split('-')[1]);
+            return { parts: parts, isCouple: isCouple };
+        }
+
         function simuler() {
             var revenu = parseFloat(document.getElementById('revenu').value);
-            var parts = parseFloat(document.getElementById('situation').value);
+            var sit = parseSituation();
+            var parts = sit.parts;
+            var isCouple = sit.isCouple;
             var invest = parseFloat(document.getElementById('investissement').value);
             var dispo = document.getElementById('dispositif').value;
             if (!revenu || !invest) { alert('Veuillez remplir tous les champs.'); return; }
 
-            var impotAvant = calcImpot(revenu, parts);
+            var impotAvant = calcImpot(revenu, parts, isCouple);
             var tmi = getTMI(revenu, parts);
             var eco = 0, detail = '', breakdown = '';
 
@@ -587,7 +597,7 @@
                 var plafond = Math.max(plafondCalc, 4710);
                 var versement = Math.min(invest, plafond);
                 var revenuApres = revenu - versement;
-                var impotApres = calcImpot(revenuApres, parts);
+                var impotApres = calcImpot(revenuApres, parts, isCouple);
                 eco = impotAvant - impotApres;
                 detail = 'Économie dès la 1ère année grâce à la déduction de votre versement PER';
                 breakdown = '<div class="sim-line"><span>Votre TMI (tranche marginale)</span><strong>' + tmi + ' %</strong></div>'
@@ -621,7 +631,6 @@
             }
             else if (dispo === 'gfi') {
                 // GFI : réduction 18%, plafond 50 000€ (célib) / 100 000€ (couple)
-                var isCouple = parts >= 2;
                 var plafond = isCouple ? 100000 : 50000;
                 if (invest > plafond) {
                     document.getElementById('simAmount').textContent = 'Montant trop élevé';
