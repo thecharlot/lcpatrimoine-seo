@@ -57,6 +57,7 @@ jobs:
             git commit -m "revision: applique les modifications demandées"
             git push
             echo "changed=true" >> $GITHUB_OUTPUT
+            echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
@@ -75,8 +76,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BRANCH="${{ steps.pr.outputs.branch }}"
+          SHA="${{ steps.commit.outputs.sha }}"
           SLUG="${{ steps.slug.outputs.value }}"
-          PREVIEW="https://raw.githack.com/thecharlot/lcpatrimoine-seo/${BRANCH}/blog/${SLUG}.html"
+          PREVIEW="https://rawcdn.githack.com/thecharlot/lcpatrimoine-seo/${SHA}/blog/${SLUG}.html"
           gh pr comment ${{ github.event.issue.number }} \
             --body "Modifications appliquées. [Prévisualiser l'article](${PREVIEW})"
