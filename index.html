@@ -674,7 +674,7 @@
                     + '<div class="sim-line"><span>Réduction totale (18% sur 9 ans)</span><strong>' + fmt(reducTotale) + '</strong></div>'
                     + '<div class="sim-line"><span>Réduction annuelle (2%/an)</span><strong>' + fmt(reducAnnuelle) + '</strong></div>'
                     + (invest > plafond ? '<div class="sim-note">Le montant dépasse le plafond de 300 000 €. La réduction est calculée sur cette base.</div>' : '')
-                    + '<div class="sim-note">Engagement de location de 9 ans. La réduction est étalée sur toute la durée (2 %/an).</div>';
+                    + '<div class="sim-note">Simulation bas\u00e9e sur un engagement de 9 ans (r\u00e9duction de 18 %, soit 2 %/an). D\'autres dur\u00e9es sont possibles (6 ou 12 ans) avec des taux diff\u00e9rents. Contactez-nous pour \u00e9tudier le sc\u00e9nario le plus adapt\u00e9 \u00e0 votre situation.</div>';
                 if (reducAnnuelle > 10000) {
                     breakdown += '<div class="sim-note">Attention : la réduction Denormandie est soumise au plafonnement global des niches fiscales de 10 000 €/an.</div>';
                     eco = Math.min(eco, 10000);
