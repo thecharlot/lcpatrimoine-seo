@@ -177,7 +177,7 @@
                         <div class="service-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
                         <h3>Transmettre à ses proches</h3>
                     </div>
-                    <p>Donation, démembrement, assurance-vie... Transmettez votre patrimoine en optimisant la fiscalité.</p>
+                    <p>Donation, démembrement, assurance-vie, GFI... Transmettez votre patrimoine en optimisant la fiscalité.</p>
                     <a href="transmission.html" class="service-link">En savoir plus →</a>
                 </div>
                 <div class="service-card">
@@ -556,13 +556,13 @@
                     + (versement < invest ? '<div class="sim-note">Plafond de déduction atteint (' + fmt(plafond) + '). Le surplus de ' + fmt(invest - versement) + ' n\'est pas déductible cette année.</div>' : '');
             }
             else if (dispo === 'girardin') {
-                // Girardin : réduction d'impôt de 110% à 120% du montant investi (one-shot)
-                var reduc = Math.round(invest * 1.15);
+                // Girardin : réduction d'impôt jusqu'à 123% du montant investi (one-shot)
+                var reduc = Math.round(invest * 1.23);
                 eco = Math.min(reduc, impotAvant);
                 detail = 'Réduction d\'impôt en une seule année (Girardin Industriel)';
                 breakdown = '<div class="sim-line"><span>Votre impôt actuel</span><strong>' + fmt(impotAvant) + '</strong></div>'
                     + '<div class="sim-line"><span>Investissement Girardin</span><strong>' + fmt(invest) + '</strong></div>'
-                    + '<div class="sim-line"><span>Réduction (~115% du montant)</span><strong>' + fmt(reduc) + '</strong></div>'
+                    + '<div class="sim-line"><span>Réduction (~123% du montant)</span><strong>' + fmt(reduc) + '</strong></div>'
                     + (reduc > impotAvant ? '<div class="sim-note">Réduction plafonnée à votre impôt. Gain réel : ' + fmt(impotAvant) + '</div>' : '');
             }
             else if (dispo === 'malraux') {
