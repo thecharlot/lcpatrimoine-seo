@@ -579,8 +579,8 @@
                     + '<div class="sim-line"><span>Plafond de déduction PER</span><strong>' + fmt(plafond) + '</strong></div>'
                     + '<div class="sim-line"><span>Versement PER déductible</span><strong>' + fmt(versement) + '</strong></div>'
                     + '<div class="sim-line"><span>Impôt après PER</span><strong>' + fmt(impotApres) + '</strong></div>'
-                    + '<div class="sim-note">Plafond cumulable sur 3 ans. Consultez votre avis d\'imposition, ligne « Plafond épargne retraite ».</div>'
-                    + (versement < invest ? '<div class="sim-note">Le surplus de ' + fmt(invest - versement) + ' n\'est pas déductible cette année, mais le plafond est cumulable sur les 3 années précédentes.</div>' : '');
+                    + '<div class="sim-note">Plafond cumulable sur 3 ans. Consultez votre avis d\'imposition, ligne « Plafond \u00e9pargne retraite ».</div>'
+                    + (versement < invest ? '<div class="sim-note">Bonne nouvelle : votre \u00e9conomie peut \u00eatre encore plus importante ! Les ' + fmt(invest - versement) + ' au-del\u00e0 du plafond annuel sont potentiellement d\u00e9ductibles gr\u00e2ce au cumul des plafonds des 3 ann\u00e9es pr\u00e9c\u00e9dentes. Contactez-nous pour calculer votre plafond r\u00e9el.</div>' : '');
             }
             else if (dispo === 'girardin') {
                 // Girardin : taux variable selon le mois d'investissement
