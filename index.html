@@ -519,23 +519,39 @@
         }
 
         // Simulateur
-        function calcImpot(revenu, parts) {
-            var q = revenu / parts, impot = 0;
-            var tranches = [
-                { seuil: 11497, taux: 0 },
-                { seuil: 29315, taux: 0.11 },
-                { seuil: 83823, taux: 0.30 },
-                { seuil: 180294, taux: 0.41 },
-                { seuil: Infinity, taux: 0.45 }
-            ];
-            var prev = 0;
-            for (var i = 0; i < tranches.length; i++) {
-                var t = tranches[i];
+        var TRANCHES = [
+            { seuil: 11497, taux: 0 },
+            { seuil: 29315, taux: 0.11 },
+            { seuil: 83823, taux: 0.30 },
+            { seuil: 180294, taux: 0.41 },
+            { seuil: Infinity, taux: 0.45 }
+        ];
+        var PLAFOND_QF = 1759; // par demi-part supplémentaire (barème 2025)
+
+        function calcImpotBrut(revenu, parts) {
+            var q = revenu / parts, impot = 0, prev = 0;
+            for (var i = 0; i < TRANCHES.length; i++) {
+                var t = TRANCHES[i];
                 if (q <= t.seuil) { impot += (q - prev) * t.taux; break; }
                 impot += (t.seuil - prev) * t.taux;
                 prev = t.seuil;
             }
-            return Math.max(0, Math.round(impot * parts));
+            return Math.round(impot * parts);
+        }
+
+        function calcImpot(revenu, parts) {
+            // Parts de référence : 1 pour célibataire, 2 pour couple
+            var partsRef = parts >= 2 ? 2 : 1;
+            var demiPartsSupp = (parts - partsRef) / 0.5;
+            if (demiPartsSupp <= 0) return Math.max(0, calcImpotBrut(revenu, parts));
+            var impotAvecQF = calcImpotBrut(revenu, parts);
+            var impotSansQF = calcImpotBrut(revenu, partsRef);
+            var avantageQF = impotSansQF - impotAvecQF;
+            var plafond = demiPartsSupp * PLAFOND_QF;
+            if (avantageQF > plafond) {
+                return Math.max(0, impotSansQF - plafond);
+            }
+            return Math.max(0, impotAvecQF);
         }
 
         function getTMI(revenu, parts) {
