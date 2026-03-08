@@ -341,12 +341,7 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
     # 6. Update sitemap.xml
     update_sitemap(slug, today)
 
-    # 7. Write LinkedIn post
-    with open("linkedin-post.md", "w", encoding="utf-8") as f:
-        f.write(linkedin_post)
-    print("LinkedIn post written: linkedin-post.md")
-
-    # 8. Write PR description for the workflow
+    # 7. Write PR description for the workflow
     pr_body = f"""## Nouvel article de blog
 
 **Titre** : {title}
@@ -356,11 +351,14 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
 ### Aperçu
 {summary}
 
-### Post LinkedIn
-> {linkedin_post}
+### Post LinkedIn (à copier-coller)
+```
+{linkedin_post}
+```
 
 ---
-*Relisez l'article et le post LinkedIn. Mergez la PR pour publier, ou commentez pour demander des modifications.*
+*Relisez l'article et le teasing LinkedIn. Mergez la PR pour publier sur le site, puis postez le teasing sur LinkedIn.*
+*Vous pouvez aussi commenter cette PR pour demander des modifications.*
 """
     with open("pr-description.md", "w", encoding="utf-8") as f:
         f.write(pr_body)
