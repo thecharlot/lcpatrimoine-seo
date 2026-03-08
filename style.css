@@ -136,7 +136,7 @@ nav .container {
     transition: color 0.3s !important;
 }
 
-.nav-linkedin:hover { color: #0A66C2 !important; }
+.nav-linkedin:hover { color: var(--or) !important; }
 
 .menu-toggle {
     display: none;
