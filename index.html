@@ -12,7 +12,7 @@
     <link rel="canonical" href="https://www.lcpatrimoine.net">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
-    <link rel="stylesheet" href="style.css?v=18">
+    <link rel="stylesheet" href="style.css?v=19">
 
     <meta property="og:title" content="LC Patrimoine — Gestion de patrimoine en Île-de-France">
     <meta property="og:description" content="Cabinet indépendant. Défiscalisation, placements, retraite, succession. Bilan patrimonial gratuit.">
@@ -624,7 +624,7 @@
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 if (data.success) {
-                    window.location.href = 'merci.html';
+                    document.getElementById('contactForm').innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:3rem;margin-bottom:16px;color:var(--or)">&#10004;</div><h3 style="color:var(--bleu-nuit);margin-bottom:12px">Merci pour votre message !</h3><p style="color:var(--gris)">Nous vous recontactons sous 24h.</p></div>';
                 } else {
                     alert('Erreur lors de l\'envoi. Veuillez nous contacter au 06 22 18 78 28.');
                     btn.textContent = 'Demander mon bilan gratuit';
