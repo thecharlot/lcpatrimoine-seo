@@ -12,7 +12,7 @@
     --texte: #2d3748;
 }
 
-html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+html { scroll-behavior: smooth; scroll-padding-top: 140px; }
 
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -371,7 +371,7 @@ nav .container {
 }
 
 /* ─── Sections ─── */
-section { padding: 80px 0; scroll-margin-top: 70px; }
+section { padding: 80px 0; scroll-margin-top: 140px; }
 
 .section-header {
     text-align: center;
@@ -1178,10 +1178,11 @@ footer h4 {
 @media (max-width: 600px) {
     .hero h1 { font-size: 1.8rem; }
     .hero { padding: 120px 0 50px; }
+    .page-hero { padding: 100px 0 40px; }
     .page-hero h1 { font-size: 1.6rem; }
     .section-header h2 { font-size: 1.6rem; }
     .apropos-title { font-size: 1.3rem !important; }
-    section { padding: 60px 0; scroll-margin-top: 120px; }
+    section { padding: 60px 0; scroll-margin-top: 140px; }
     .blog-grid { grid-template-columns: 1fr; }
     .logo img { height: 60px; }
     .nav-links { display: none; }
