@@ -30,6 +30,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ steps.pr.outputs.branch }}
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -60,12 +61,14 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Find article slug
+      - name: Read article slug
         if: steps.commit.outputs.changed == 'true'
         id: slug
         run: |
-          SLUG=$(ls blog/*.html | sort -t/ -k2 | tail -1 | sed 's|blog/||;s|\.html||')
-          echo "value=$SLUG" >> $GITHUB_OUTPUT
+          if [ -f article-slug.txt ]; then
+            echo "value=$(cat article-slug.txt)" >> $GITHUB_OUTPUT
+            rm article-slug.txt
+          fi
 
       - name: Comment PR with preview link
         if: steps.commit.outputs.changed == 'true'

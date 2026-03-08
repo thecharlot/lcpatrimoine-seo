@@ -5,6 +5,7 @@ import os
 import re
 import json
 import glob
+import subprocess
 
 import anthropic
 
@@ -14,28 +15,38 @@ COMMENT_BODY = os.environ["COMMENT_BODY"]
 BLOG_DIR = "blog"
 
 
-def find_latest_article():
-    """Find the most recently modified article in blog/."""
-    articles = glob.glob(f"{BLOG_DIR}/*.html")
-    if not articles:
-        raise FileNotFoundError("No articles found in blog/")
-    return max(articles, key=os.path.getmtime)
+def find_new_article():
+    """Find the article added in this branch compared to main."""
+    # Use git diff to find new files in blog/
+    result = subprocess.run(
+        ["git", "diff", "--name-only", "--diff-filter=A", "origin/main", "HEAD", "--", "blog/*.html"],
+        capture_output=True, text=True,
+    )
+    new_files = [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
+    if new_files:
+        return new_files[0]
+
+    # Fallback: find modified files in blog/
+    result = subprocess.run(
+        ["git", "diff", "--name-only", "origin/main", "HEAD", "--", "blog/*.html"],
+        capture_output=True, text=True,
+    )
+    modified = [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
+    if modified:
+        return modified[0]
+
+    raise FileNotFoundError("No new or modified article found in this branch")
 
 
 def main():
-    # 1. Find the article and linkedin post from this PR
-    article_path = find_latest_article()
+    # 1. Find the article from this PR (new file vs main)
+    article_path = find_new_article()
     slug = os.path.basename(article_path).replace(".html", "")
 
     with open(article_path, "r", encoding="utf-8") as f:
         article_html = f.read()
 
-    linkedin_post = ""
-    if os.path.exists("linkedin-post.md"):
-        with open("linkedin-post.md", "r", encoding="utf-8") as f:
-            linkedin_post = f.read()
-
-    print(f"Article: {article_path}")
+    print(f"Article: {article_path} (slug: {slug})")
     print(f"Comment: {COMMENT_BODY[:100]}...")
 
     # 2. Call Claude to apply the revision
@@ -51,16 +62,10 @@ def main():
 {article_html}
 ```
 
-**Post LinkedIn actuel** :
-```
-{linkedin_post}
-```
-
 Applique les modifications demandées par Carine. Garde le même format HTML, la même structure, le même ton.
 
 Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant :
 - "article_html": l'article HTML complet modifié
-- "linkedin_post": le post LinkedIn modifié (ou identique si pas de demande de modif)
 - "changes_summary": résumé en 1 phrase des modifications apportées"""
 
     print("Calling Claude API for revision...")
@@ -77,15 +82,14 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant :
 
     data = json.loads(raw)
 
-    # 3. Write updated files
+    # 3. Write updated article
     with open(article_path, "w", encoding="utf-8") as f:
         f.write(data["article_html"])
     print(f"Article updated: {article_path}")
 
-    if data.get("linkedin_post"):
-        with open("linkedin-post.md", "w", encoding="utf-8") as f:
-            f.write(data["linkedin_post"])
-        print("LinkedIn post updated.")
+    # 4. Write slug for the workflow
+    with open("article-slug.txt", "w", encoding="utf-8") as f:
+        f.write(slug)
 
     print(f"Changes: {data.get('changes_summary', 'N/A')}")
 
