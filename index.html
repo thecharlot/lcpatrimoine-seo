@@ -619,15 +619,19 @@
                 else taux = 1.15;
                 var tauxPct = Math.round(taux * 100);
                 var reduc = Math.round(invest * taux);
-                eco = Math.min(reduc, impotAvant);
-                detail = 'Réduction d\'impôt en une seule année (Girardin Industriel)';
-                var moisNoms = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-                breakdown = '<div class="sim-line"><span>Votre impôt actuel</span><strong>' + fmt(impotAvant) + '</strong></div>'
+                // Plafonnement niches fiscales Girardin : plafond 18 000€, mais seuls 44% comptent (plein droit)
+                var plafondNiches = Math.round(18000 / 0.44); // ~40 909€ de réduction max
+                var reducEffective = Math.min(reduc, plafondNiches);
+                eco = Math.min(reducEffective, impotAvant);
+                detail = 'R\u00e9duction d\'imp\u00f4t en une seule ann\u00e9e (Girardin Industriel)';
+                var moisNoms = ['', 'Janvier', 'F\u00e9vrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Ao\u00fbt', 'Septembre', 'Octobre', 'Novembre', 'D\u00e9cembre'];
+                breakdown = '<div class="sim-line"><span>Votre imp\u00f4t actuel</span><strong>' + fmt(impotAvant) + '</strong></div>'
                     + '<div class="sim-line"><span>Investissement Girardin</span><strong>' + fmt(invest) + '</strong></div>'
                     + '<div class="sim-line"><span>Mois d\'investissement</span><strong>' + moisNoms[mois] + '</strong></div>'
-                    + '<div class="sim-line"><span>Réduction (' + tauxPct + '% du montant)</span><strong>' + fmt(reduc) + '</strong></div>'
-                    + (reduc > impotAvant ? '<div class="sim-note">Bonne nouvelle : l\'exc\u00e9dent de ' + fmt(reduc - impotAvant) + ' non utilis\u00e9 cette ann\u00e9e est reportable sur les 5 ann\u00e9es suivantes. Votre \u00e9conomie totale peut donc atteindre ' + fmt(reduc) + '. Contactez-nous pour optimiser ce report.</div>' : '')
-                    + '<div class="sim-note">Le Girardin Industriel est hors plafonnement des niches fiscales (avantage sp\u00e9cifique de ce dispositif).</div>';
+                    + '<div class="sim-line"><span>R\u00e9duction (' + tauxPct + '% du montant)</span><strong>' + fmt(reduc) + '</strong></div>'
+                    + (reduc > plafondNiches ? '<div class="sim-note">R\u00e9duction plafonn\u00e9e \u00e0 ' + fmt(plafondNiches) + ' (plafond des niches fiscales : 18 000 \u20ac, dont seuls 44 % de la r\u00e9duction Girardin sont retenus).</div>' : '')
+                    + (reducEffective > impotAvant ? '<div class="sim-note">Bonne nouvelle : l\'exc\u00e9dent de ' + fmt(reducEffective - impotAvant) + ' non utilis\u00e9 cette ann\u00e9e est reportable sur les 5 ann\u00e9es suivantes. Votre \u00e9conomie totale peut donc atteindre ' + fmt(reducEffective) + '. Contactez-nous pour optimiser ce report.</div>' : '')
+                    + '<div class="sim-note">Girardin Industriel : plafond sp\u00e9cifique de 18 000 \u20ac (seuls 44 % de la r\u00e9duction comptent dans le plafond, soit jusqu\'\u00e0 ~40 909 \u20ac de r\u00e9duction effective).</div>';
             }
             else if (dispo === 'gfi') {
                 // GFI : réduction 18%, plafond 50 000€ (célib) / 100 000€ (couple)
