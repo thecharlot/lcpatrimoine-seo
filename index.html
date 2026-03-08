@@ -12,7 +12,7 @@
     <link rel="canonical" href="https://www.lcpatrimoine.net">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
-    <link rel="stylesheet" href="style.css?v=20">
+    <link rel="stylesheet" href="style.css?v=21">
 
     <meta property="og:title" content="LC Patrimoine — Gestion de patrimoine en Île-de-France">
     <meta property="og:description" content="Cabinet indépendant. Défiscalisation, placements, retraite, succession. Bilan patrimonial gratuit.">
@@ -262,7 +262,7 @@
             <div class="section-header">
                 <div class="section-label">Outil gratuit</div>
                 <h2>Estimez votre économie d'impôt</h2>
-                <p>Simulation indicative basée sur le barème 2025.</p>
+                <p>Simulation indicative basée sur le barème 2026.</p>
             </div>
             <div class="sim-box">
                 <div class="sim-field">
@@ -282,11 +282,28 @@
                 </div>
                 <div class="sim-field">
                     <label for="dispositif">Levier d'optimisation</label>
-                    <select id="dispositif">
+                    <select id="dispositif" onchange="toggleMoisInvest()">
                         <option value="per">PER (Plan Épargne Retraite)</option>
                         <option value="girardin">Girardin Industriel</option>
-                        <option value="malraux">Malraux / Monument historique</option>
-                        <option value="deficit">Déficit foncier</option>
+                        <option value="gfi">GFI (Groupement Foncier d'Investissement)</option>
+                        <option value="denormandie">Denormandie</option>
+                    </select>
+                </div>
+                <div class="sim-field" id="moisInvestField" style="display:none;">
+                    <label for="moisInvest">Mois d'investissement</label>
+                    <select id="moisInvest">
+                        <option value="1">Janvier</option>
+                        <option value="2">Février</option>
+                        <option value="3">Mars</option>
+                        <option value="4">Avril</option>
+                        <option value="5">Mai</option>
+                        <option value="6">Juin</option>
+                        <option value="7">Juillet</option>
+                        <option value="8">Août</option>
+                        <option value="9">Septembre</option>
+                        <option value="10">Octobre</option>
+                        <option value="11">Novembre</option>
+                        <option value="12">Décembre</option>
                     </select>
                 </div>
                 <div class="sim-field">
@@ -298,7 +315,7 @@
                     <div class="amount" id="simAmount"></div>
                     <div class="detail" id="simDetail"></div>
                     <div class="sim-breakdown" id="simBreakdown"></div>
-                    <div class="disclaimer">Estimation indicative basée sur le barème 2025. Non contractuel. Chaque situation est unique — contactez-nous pour une simulation personnalisée.</div>
+                    <div class="disclaimer">Estimation indicative basée sur le barème 2026. Non contractuel. Chaque situation est unique — contactez-nous pour une simulation personnalisée.</div>
                     <a href="#contact" class="btn-primary" style="margin-top:18px;display:inline-block;">Simulation personnalisée gratuite</a>
                 </div>
             </div>
@@ -532,6 +549,11 @@
 
         function fmt(n) { return Math.round(n).toLocaleString('fr-FR') + ' \u20ac'; }
 
+        function toggleMoisInvest() {
+            var dispo = document.getElementById('dispositif').value;
+            document.getElementById('moisInvestField').style.display = (dispo === 'girardin') ? '' : 'none';
+        }
+
         function simuler() {
             var revenu = parseFloat(document.getElementById('revenu').value);
             var parts = parseFloat(document.getElementById('situation').value);
@@ -544,8 +566,9 @@
             var eco = 0, detail = '', breakdown = '';
 
             if (dispo === 'per') {
-                // PER : le versement est déductible du revenu imposable (plafonné à 10% du revenu, max 35 194€)
-                var plafond = Math.min(revenu * 0.10, 35194);
+                // PER 2026 : plafond = min(10% revenu, 37 680€), plancher 4 710€
+                var plafondCalc = Math.min(revenu * 0.10, 37680);
+                var plafond = Math.max(plafondCalc, 4710);
                 var versement = Math.min(invest, plafond);
                 var revenuApres = revenu - versement;
                 var impotApres = calcImpot(revenuApres, parts);
@@ -553,45 +576,83 @@
                 detail = 'Économie dès la 1ère année grâce à la déduction de votre versement PER';
                 breakdown = '<div class="sim-line"><span>Votre TMI (tranche marginale)</span><strong>' + tmi + ' %</strong></div>'
                     + '<div class="sim-line"><span>Impôt actuel estimé</span><strong>' + fmt(impotAvant) + '</strong></div>'
+                    + '<div class="sim-line"><span>Plafond de déduction PER</span><strong>' + fmt(plafond) + '</strong></div>'
                     + '<div class="sim-line"><span>Versement PER déductible</span><strong>' + fmt(versement) + '</strong></div>'
                     + '<div class="sim-line"><span>Impôt après PER</span><strong>' + fmt(impotApres) + '</strong></div>'
-                    + (versement < invest ? '<div class="sim-note">Plafond de déduction atteint (' + fmt(plafond) + '). Le surplus de ' + fmt(invest - versement) + ' n\'est pas déductible cette année.</div>' : '');
+                    + '<div class="sim-note">Plafond cumulable sur 3 ans. Consultez votre avis d\'imposition, ligne « Plafond épargne retraite ».</div>'
+                    + (versement < invest ? '<div class="sim-note">Le surplus de ' + fmt(invest - versement) + ' n\'est pas déductible cette année, mais le plafond est cumulable sur les 3 années précédentes.</div>' : '');
             }
             else if (dispo === 'girardin') {
-                // Girardin : réduction d'impôt jusqu'à 123% du montant investi (one-shot)
-                var reduc = Math.round(invest * 1.23);
+                // Girardin : taux variable selon le mois d'investissement
+                var mois = parseInt(document.getElementById('moisInvest').value);
+                var taux;
+                if (mois === 1) taux = 1.23;
+                else if (mois <= 3) taux = 1.21;
+                else if (mois <= 6) taux = 1.19;
+                else if (mois <= 9) taux = 1.17;
+                else taux = 1.15;
+                var tauxPct = Math.round(taux * 100);
+                var reduc = Math.round(invest * taux);
                 eco = Math.min(reduc, impotAvant);
                 detail = 'Réduction d\'impôt en une seule année (Girardin Industriel)';
+                var moisNoms = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
                 breakdown = '<div class="sim-line"><span>Votre impôt actuel</span><strong>' + fmt(impotAvant) + '</strong></div>'
                     + '<div class="sim-line"><span>Investissement Girardin</span><strong>' + fmt(invest) + '</strong></div>'
-                    + '<div class="sim-line"><span>Réduction (~123% du montant)</span><strong>' + fmt(reduc) + '</strong></div>'
-                    + (reduc > impotAvant ? '<div class="sim-note">Réduction plafonnée à votre impôt. Gain réel : ' + fmt(impotAvant) + '</div>' : '');
+                    + '<div class="sim-line"><span>Mois d\'investissement</span><strong>' + moisNoms[mois] + '</strong></div>'
+                    + '<div class="sim-line"><span>Réduction (' + tauxPct + '% du montant)</span><strong>' + fmt(reduc) + '</strong></div>'
+                    + (reduc > impotAvant ? '<div class="sim-note">Réduction plafonnée à votre impôt. Gain réel : ' + fmt(impotAvant) + '</div>' : '')
+                    + '<div class="sim-note">Le Girardin Industriel est hors plafonnement des niches fiscales (avantage spécifique de ce dispositif).</div>';
             }
-            else if (dispo === 'malraux') {
-                // Malraux : réduction de 22% à 30% des travaux, plafond 400 000€ sur 4 ans
-                var plafond = 400000;
-                var base = Math.min(invest, plafond);
-                var reduc = Math.round(base * 0.22);
+            else if (dispo === 'gfi') {
+                // GFI : réduction 18%, plafond 50 000€ (célib) / 100 000€ (couple)
+                var isCouple = parts >= 2;
+                var plafond = isCouple ? 100000 : 50000;
+                if (invest > plafond) {
+                    document.getElementById('simAmount').textContent = 'Montant trop élevé';
+                    document.getElementById('simDetail').textContent = 'Le plafond GFI est de ' + fmt(plafond) + ' pour un' + (isCouple ? ' couple' : ' célibataire') + '.';
+                    document.getElementById('simBreakdown').innerHTML = '<div class="sim-note">Veuillez saisir un montant inférieur ou égal à ' + fmt(plafond) + '.</div>';
+                    var r = document.getElementById('simResult');
+                    r.classList.add('visible');
+                    r.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+                var reduc = Math.round(invest * 0.18);
                 eco = Math.min(reduc, impotAvant);
-                detail = 'Réduction d\'impôt sur le montant des travaux (taux de 22 % — jusqu\'à 30 % en secteur sauvegardé)';
+                detail = 'Réduction d\'impôt GFI (18% du montant investi)';
                 breakdown = '<div class="sim-line"><span>Votre impôt actuel</span><strong>' + fmt(impotAvant) + '</strong></div>'
-                    + '<div class="sim-line"><span>Montant des travaux Malraux</span><strong>' + fmt(invest) + '</strong></div>'
-                    + '<div class="sim-line"><span>Base retenue (plafond ' + fmt(plafond) + ')</span><strong>' + fmt(base) + '</strong></div>'
-                    + '<div class="sim-line"><span>Réduction (22%)</span><strong>' + fmt(reduc) + '</strong></div>'
-                    + (reduc > impotAvant ? '<div class="sim-note">Réduction plafonnée à votre impôt.</div>' : '');
+                    + '<div class="sim-line"><span>Investissement GFI</span><strong>' + fmt(invest) + '</strong></div>'
+                    + '<div class="sim-line"><span>Plafond (' + (isCouple ? 'couple' : 'célibataire') + ')</span><strong>' + fmt(plafond) + '</strong></div>'
+                    + '<div class="sim-line"><span>Réduction (18%)</span><strong>' + fmt(reduc) + '</strong></div>';
+                if (reduc > 10000) {
+                    breakdown += '<div class="sim-note">Attention : la réduction GFI est soumise au plafonnement global des niches fiscales de 10 000 €/an. L\'excédent est reportable sur les 4 années suivantes.</div>';
+                    eco = Math.min(eco, 10000);
+                }
+                if (reduc > impotAvant) {
+                    breakdown += '<div class="sim-note">Réduction plafonnée à votre impôt dû (' + fmt(impotAvant) + ').</div>';
+                }
             }
-            else if (dispo === 'deficit') {
-                // Déficit foncier : déductible du revenu global jusqu'à 10 700€/an
-                var deductible = Math.min(invest, 10700);
-                var revenuApres = revenu - deductible;
-                var impotApres = calcImpot(revenuApres, parts);
-                eco = impotAvant - impotApres;
-                detail = 'Économie annuelle via imputation sur votre revenu global';
-                breakdown = '<div class="sim-line"><span>Votre TMI</span><strong>' + tmi + ' %</strong></div>'
-                    + '<div class="sim-line"><span>Impôt actuel estimé</span><strong>' + fmt(impotAvant) + '</strong></div>'
-                    + '<div class="sim-line"><span>Déficit imputable (max 10 700 \u20ac/an)</span><strong>' + fmt(deductible) + '</strong></div>'
-                    + '<div class="sim-line"><span>Impôt après déduction</span><strong>' + fmt(impotApres) + '</strong></div>'
-                    + (invest > 10700 ? '<div class="sim-note">Le surplus de ' + fmt(invest - 10700) + ' est reportable sur vos revenus fonciers des 10 années suivantes.</div>' : '');
+            else if (dispo === 'denormandie') {
+                // Denormandie : 18% sur 9 ans, plafond 300 000€
+                var plafond = 300000;
+                var base = Math.min(invest, plafond);
+                var reducTotale = Math.round(base * 0.18);
+                var reducAnnuelle = Math.round(reducTotale / 9);
+                eco = Math.min(reducAnnuelle, impotAvant);
+                detail = 'Réduction d\'impôt annuelle sur 9 ans (Denormandie)';
+                breakdown = '<div class="sim-line"><span>Votre impôt actuel</span><strong>' + fmt(impotAvant) + '</strong></div>'
+                    + '<div class="sim-line"><span>Prix du bien</span><strong>' + fmt(invest) + '</strong></div>'
+                    + (invest > plafond ? '<div class="sim-line"><span>Base retenue (plafond ' + fmt(plafond) + ')</span><strong>' + fmt(base) + '</strong></div>' : '')
+                    + '<div class="sim-line"><span>Réduction totale (18% sur 9 ans)</span><strong>' + fmt(reducTotale) + '</strong></div>'
+                    + '<div class="sim-line"><span>Réduction annuelle (2%/an)</span><strong>' + fmt(reducAnnuelle) + '</strong></div>'
+                    + (invest > plafond ? '<div class="sim-note">Le montant dépasse le plafond de 300 000 €. La réduction est calculée sur cette base.</div>' : '')
+                    + '<div class="sim-note">Engagement de location de 9 ans. La réduction est étalée sur toute la durée (2 %/an).</div>';
+                if (reducAnnuelle > 10000) {
+                    breakdown += '<div class="sim-note">Attention : la réduction Denormandie est soumise au plafonnement global des niches fiscales de 10 000 €/an.</div>';
+                    eco = Math.min(eco, 10000);
+                }
+                if (reducAnnuelle > impotAvant) {
+                    breakdown += '<div class="sim-note">Réduction plafonnée à votre impôt dû (' + fmt(impotAvant) + ').</div>';
+                }
             }
 
             document.getElementById('simAmount').textContent = fmt(eco) + ' d\'\u00e9conomie';
