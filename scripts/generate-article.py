@@ -51,7 +51,7 @@ RSS_FEEDS = [
 # ---------------------------------------------------------------------------
 
 def fetch_recent_headlines():
-    """Fetch recent headlines from French financial RSS feeds."""
+    """Fetch recent headlines + links from French financial RSS feeds."""
     headlines = []
     for feed_url in RSS_FEEDS:
         try:
@@ -61,17 +61,20 @@ def fetch_recent_headlines():
             # RSS 2.0 format
             for item in root.findall(".//item")[:3]:
                 title_el = item.find("title")
+                link_el = item.find("link")
                 if title_el is not None and title_el.text:
-                    headlines.append(title_el.text.strip())
+                    title = title_el.text.strip()
+                    link = link_el.text.strip() if link_el is not None and link_el.text else ""
+                    headlines.append((title, link))
         except Exception as e:
             print(f"Warning: could not fetch {feed_url}: {e}")
-    # Deduplicate and limit
+    # Deduplicate by title and limit
     seen = set()
     unique = []
-    for h in headlines:
-        if h not in seen:
-            seen.add(h)
-            unique.append(h)
+    for title, link in headlines:
+        if title not in seen:
+            seen.add(title)
+            unique.append((title, link))
     return unique[:40]
 
 def get_existing_articles():
@@ -341,7 +344,7 @@ def main():
     print("Fetching recent financial headlines...")
     headlines = fetch_recent_headlines()
     if headlines:
-        headlines_text = "\n".join(f"- {h}" for h in headlines)
+        headlines_text = "\n".join(f"- {title} ({link})" if link else f"- {title}" for title, link in headlines)
         print(f"Found {len(headlines)} headlines.")
     else:
         headlines_text = "(aucun titre récupéré)"
@@ -367,6 +370,7 @@ def main():
 **Domaines** : défiscalisation, investissement, retraite, transmission, assurance emprunteur.
 **Outils à mettre en avant** : PER, Girardin, GFI, Denormandie, assurance-vie, SCPI, contrat de capitalisation, LMNP, démembrement, SCI, assurance emprunteur.
 **Ton** : accessible, concret, professionnel mais pas jargonneux. Tu tutoies pas le lecteur, tu le vouvoies.
+**Sources** : quand tu cites un chiffre, une loi, une étude ou une info factuelle importante, ajoute un lien source dans le HTML (balise <a href="..." target="_blank">). Utilise les liens des actualités ci-dessus ou des sources officielles (INSEE, service-public.fr, legifrance.gouv.fr, Banque de France, etc.).
 **IMPORTANT** : Nous sommes en {today[:4]}. Ne fais JAMAIS référence à des événements d'années passées comme s'ils étaient actuels.
 
 **Articles existants (à ne pas répéter ni trop chevaucher)** :
