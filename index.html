@@ -12,7 +12,7 @@
     <link rel="canonical" href="https://www.lcpatrimoine.net">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
-    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="stylesheet" href="style.css?v=14">
 
     <meta property="og:title" content="LC Patrimoine — Gestion de patrimoine en Île-de-France">
     <meta property="og:description" content="Cabinet indépendant. Défiscalisation, placements, retraite, succession. Bilan patrimonial gratuit.">
@@ -395,43 +395,48 @@
                         <p style="margin:8px 0 0; font-size:0.9rem; color:var(--gris);">Au cabinet, à domicile en Île-de-France, ou en visioconférence.</p>
                     </div>
                 </div>
-                <form class="contact-form" id="contactForm" onsubmit="submitForm(event)">
+                <form class="contact-form" id="contactForm" action="https://formsubmit.co/contact@lcpatrimoine.net" method="POST">
+                    <input type="hidden" name="_subject" value="Nouvelle demande de bilan — LC Patrimoine">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_next" value="https://www.lcpatrimoine.net/merci.html">
+                    <input type="hidden" name="_template" value="table">
+                    <input type="text" name="_honey" style="display:none">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="prenom">Prénom</label>
-                            <input type="text" id="prenom" name="prenom" required placeholder="Votre prénom">
+                            <input type="text" id="prenom" name="Prénom" required placeholder="Votre prénom">
                         </div>
                         <div class="form-group">
                             <label for="nom">Nom</label>
-                            <input type="text" id="nom" name="nom" required placeholder="Votre nom">
+                            <input type="text" id="nom" name="Nom" required placeholder="Votre nom">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" id="email" name="email" required placeholder="votre@email.com">
+                            <input type="email" id="email" name="Email" required placeholder="votre@email.com">
                         </div>
                         <div class="form-group">
                             <label for="telephone">Téléphone</label>
-                            <input type="tel" id="telephone" name="telephone" required placeholder="06 12 34 56 78">
+                            <input type="tel" id="telephone" name="Téléphone" required placeholder="06 12 34 56 78">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="sujet">Sujet</label>
-                        <select id="sujet" name="sujet">
+                        <select id="sujet" name="Sujet">
                             <option value="">-- Choisir --</option>
-                            <option value="bilan">Bilan patrimonial</option>
-                            <option value="fiscalite">Réduire mes impôts</option>
-                            <option value="placements">Optimiser mon épargne</option>
-                            <option value="immobilier">Investissement immobilier</option>
-                            <option value="retraite">Préparer ma retraite</option>
-                            <option value="transmission">Transmission / Succession</option>
-                            <option value="autre">Autre</option>
+                            <option value="Bilan patrimonial">Bilan patrimonial</option>
+                            <option value="Réduire mes impôts">Réduire mes impôts</option>
+                            <option value="Optimiser mon épargne">Optimiser mon épargne</option>
+                            <option value="Investissement immobilier">Investissement immobilier</option>
+                            <option value="Préparer ma retraite">Préparer ma retraite</option>
+                            <option value="Transmission / Succession">Transmission / Succession</option>
+                            <option value="Autre">Autre</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="message">Message (optionnel)</label>
-                        <textarea id="message" name="message" placeholder="Votre situation ou votre question en quelques mots..."></textarea>
+                        <textarea id="message" name="Message" placeholder="Votre situation ou votre question en quelques mots..."></textarea>
                     </div>
                     <button type="submit" class="form-submit">Demander mon bilan gratuit</button>
                     <p class="form-note">Vos données restent confidentielles.</p>
@@ -600,16 +605,6 @@
             var r = document.getElementById('simResult');
             r.classList.add('visible');
             r.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        // Form
-        function submitForm(e) {
-            e.preventDefault();
-            var f = document.getElementById('contactForm'), d = new FormData(f);
-            var subject = 'Demande de bilan - ' + d.get('prenom') + ' ' + d.get('nom');
-            var body = 'Pr\u00e9nom: ' + d.get('prenom') + '\nNom: ' + d.get('nom') + '\nEmail: ' + d.get('email') + '\nT\u00e9l: ' + d.get('telephone') + '\nSujet: ' + d.get('sujet') + '\nMessage: ' + d.get('message');
-            window.location.href = 'mailto:contact@lcpatrimoine.net?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-            f.innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:3rem;margin-bottom:16px">&#10004;</div><h3 style="color:var(--bleu-nuit);margin-bottom:12px">Merci !</h3><p style="color:var(--gris)">Carine vous recontacte sous 24h.</p></div>';
         }
 
         // Smooth scroll with nav offset
