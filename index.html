@@ -522,10 +522,10 @@
         function calcImpot(revenu, parts) {
             var q = revenu / parts, impot = 0;
             var tranches = [
-                { seuil: 11294, taux: 0 },
-                { seuil: 28797, taux: 0.11 },
-                { seuil: 82341, taux: 0.30 },
-                { seuil: 177106, taux: 0.41 },
+                { seuil: 11497, taux: 0 },
+                { seuil: 29315, taux: 0.11 },
+                { seuil: 83823, taux: 0.30 },
+                { seuil: 180294, taux: 0.41 },
                 { seuil: Infinity, taux: 0.45 }
             ];
             var prev = 0;
@@ -540,10 +540,10 @@
 
         function getTMI(revenu, parts) {
             var q = revenu / parts;
-            if (q > 177106) return 45;
-            if (q > 82341) return 41;
-            if (q > 28797) return 30;
-            if (q > 11294) return 11;
+            if (q > 180294) return 45;
+            if (q > 83823) return 41;
+            if (q > 29315) return 30;
+            if (q > 11497) return 11;
             return 0;
         }
 
