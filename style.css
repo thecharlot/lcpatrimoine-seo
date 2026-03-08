@@ -12,7 +12,7 @@
     --texte: #2d3748;
 }
 
-html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+html { scroll-behavior: smooth; scroll-padding-top: 70px; }
 
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -371,7 +371,7 @@ nav .container {
 }
 
 /* ─── Sections ─── */
-section { padding: 80px 0; }
+section { padding: 80px 0; scroll-margin-top: 70px; }
 
 .section-header {
     text-align: center;
