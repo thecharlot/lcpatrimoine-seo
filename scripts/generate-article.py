@@ -26,24 +26,19 @@ UNSPLASH_ACCESS_KEY = os.environ.get("UNSPLASH_ACCESS_KEY", "")
 # Flux RSS : patrimoine, finance, économie, immobilier, fiscalité
 RSS_FEEDS = [
     # Patrimoine & finances perso
-    "https://www.lesechos.fr/rss/patrimoine.xml",
-    "https://www.capital.fr/votre-argent/feed",
     "https://www.lefigaro.fr/rss/figaro_placement.xml",
-    "https://www.moneyvox.fr/rss/actu.xml",
+    "https://feed.prismamediadigital.com/v1/cap/rss?sources=capital&categories=votre-argent",
+    "https://www.moneyvox.fr/actu/rss.php",
     # Économie générale
-    "https://www.lesechos.fr/rss/economie-france.xml",
     "https://www.lefigaro.fr/rss/figaro_conjoncture.xml",
-    "https://www.france24.com/fr/éco-tech/rss",
     "https://www.bfmtv.com/rss/economie/",
+    "https://news.google.com/rss/search?q=patrimoine+OR+fiscalit%C3%A9+OR+%C3%A9pargne+OR+immobilier&hl=fr&gl=FR&ceid=FR:fr",
     # Immobilier
-    "https://www.lesechos.fr/rss/immobilier.xml",
     "https://www.lefigaro.fr/rss/figaro_immobilier.xml",
     "https://edito.seloger.com/feed",
-    # Retraite & social
-    "https://www.previssima.fr/feed",
     # Fiscalité & droit
     "https://www.legifiscal.fr/rss.xml",
-    "https://www.vie-publique.fr/rss/actualite.xml",
+    "https://www.vie-publique.fr/actualites-feeds.xml",
 ]
 
 # ---------------------------------------------------------------------------
@@ -55,7 +50,7 @@ def fetch_recent_headlines():
     headlines = []
     for feed_url in RSS_FEEDS:
         try:
-            resp = requests.get(feed_url, timeout=10)
+            resp = requests.get(feed_url, timeout=10, headers={"User-Agent": "Mozilla/5.0 LCPatrimoine-Bot"})
             resp.raise_for_status()
             root = ET.fromstring(resp.content)
             # RSS 2.0 format
@@ -101,15 +96,21 @@ def download_image(slug, query="", forced_url=""):
     os.makedirs(f"{BLOG_DIR}/img", exist_ok=True)
     img_path = f"{BLOG_DIR}/img/{slug}.jpg"
 
+    headers = {"User-Agent": "Mozilla/5.0 LCPatrimoine-Bot"}
+
     # Option 1: forced image URL
     if forced_url:
         print(f"Downloading forced image: {forced_url}")
-        img_resp = requests.get(forced_url, timeout=30)
-        img_resp.raise_for_status()
-        with open(img_path, "wb") as f:
-            f.write(img_resp.content)
-        print(f"Image saved: {img_path}")
-        return img_path
+        try:
+            img_resp = requests.get(forced_url, timeout=30, headers=headers)
+            img_resp.raise_for_status()
+            with open(img_path, "wb") as f:
+                f.write(img_resp.content)
+            print(f"Image saved: {img_path}")
+            return img_path
+        except Exception as e:
+            print(f"Warning: could not download forced image: {e}")
+            print("Falling back to Unsplash search.")
 
     # Option 2: Unsplash search
     if not UNSPLASH_ACCESS_KEY:
@@ -130,7 +131,7 @@ def download_image(slug, query="", forced_url=""):
 
     # Pick first photo that looks like a real photo (skip illustrations)
     img_url = results[0]["urls"]["regular"]
-    img_resp = requests.get(img_url, timeout=30)
+    img_resp = requests.get(img_url, timeout=30, headers=headers)
     img_resp.raise_for_status()
 
     with open(img_path, "wb") as f:
