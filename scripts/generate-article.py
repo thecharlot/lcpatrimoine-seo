@@ -21,7 +21,6 @@ SITE_URL = "https://www.lcpatrimoine.net"
 STYLE_VERSION = "23"
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
-UNSPLASH_ACCESS_KEY = os.environ.get("UNSPLASH_ACCESS_KEY", "")
 
 # Flux RSS : patrimoine, finance, économie, immobilier, fiscalité
 RSS_FEEDS = [
@@ -87,70 +86,8 @@ def get_existing_articles():
     return articles
 
 
-def download_image(slug, query="", forced_url=""):
-    """Download an image and save it to blog/img/.
 
-    If forced_url is provided, download from that URL directly.
-    Otherwise, search Unsplash with the given query.
-    """
-    os.makedirs(f"{BLOG_DIR}/img", exist_ok=True)
-    img_path = f"{BLOG_DIR}/img/{slug}.jpg"
-
-    browser_ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-    headers = {"User-Agent": browser_ua}
-
-    # Option 1: forced image URL
-    if forced_url:
-        print(f"Downloading forced image: {forced_url}")
-        try:
-            img_resp = requests.get(forced_url, timeout=30, headers={
-                "User-Agent": browser_ua,
-                "Accept": "image/webp,image/apng,image/*,*/*;q=0.8",
-                "Referer": forced_url,
-            })
-            img_resp.raise_for_status()
-            # Verify it's actually an image (not an HTML error page)
-            content_type = img_resp.headers.get("Content-Type", "")
-            if "image" in content_type or len(img_resp.content) > 10000:
-                with open(img_path, "wb") as f:
-                    f.write(img_resp.content)
-                print(f"Image saved: {img_path}")
-                return img_path
-            else:
-                print(f"Warning: URL returned non-image content ({content_type}). Falling back to Unsplash.")
-        except Exception as e:
-            print(f"WARNING: could not download forced image: {e}")
-            print("Falling back to Unsplash search.")
-
-    # Option 2: Unsplash search
-    if not UNSPLASH_ACCESS_KEY:
-        print("UNSPLASH_ACCESS_KEY not set, skipping image download.")
-        return None
-
-    resp = requests.get(
-        "https://api.unsplash.com/search/photos",
-        params={"query": query, "per_page": 5, "orientation": "landscape", "content_filter": "high"},
-        headers={"Authorization": f"Client-ID {UNSPLASH_ACCESS_KEY}"},
-        timeout=15,
-    )
-    resp.raise_for_status()
-    results = resp.json().get("results", [])
-    if not results:
-        print(f"No Unsplash image found for '{query}'.")
-        return None
-
-    # Pick first photo that looks like a real photo (skip illustrations)
-    img_url = results[0]["urls"]["regular"]
-    img_resp = requests.get(img_url, timeout=30, headers=headers)
-    img_resp.raise_for_status()
-
-    with open(img_path, "wb") as f:
-        f.write(img_resp.content)
-    print(f"Image saved: {img_path}")
-    return img_path
-
-
-def generate_article_html(title, slug, meta_description, breadcrumb_short, body_html, pub_date, has_image=False):
+def generate_article_html(title, slug, meta_description, breadcrumb_short, body_html, pub_date):
     """Generate the full HTML page for a blog article."""
     return f'''<!DOCTYPE html>
 <html lang="fr">
@@ -215,7 +152,6 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
 
     <section class="page-content">
         <div class="container">
-{'            <img src="img/' + slug + '.jpg" alt="' + title + '" style="width:100%;max-height:400px;object-fit:cover;border-radius:12px;margin-bottom:2rem;">' if has_image else ''}
 {body_html}
 
             <div class="cta-box">
@@ -282,15 +218,12 @@ def format_date_fr(iso_date):
     return f"{int(d)} {months[int(m)]} {y}"
 
 
-def add_blog_card(slug, title, summary, pub_date, has_image):
+def add_blog_card(slug, title, summary, pub_date):
     """Insert a new blog card at the top of blog.html."""
     with open(BLOG_HTML, "r", encoding="utf-8") as f:
         html = f.read()
 
     img_tag = ""
-    if has_image:
-        img_alt = title.split(":")[0].strip() if ":" in title else title
-        img_tag = f'\n                    <img src="blog/img/{slug}.jpg" alt="{img_alt}" class="blog-card-img">'
 
     card = f'''
                 <!-- {format_date_fr(pub_date)} -->
@@ -396,7 +329,6 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
 - "breadcrumb_short": mot-clé court pour le fil d'Ariane (ex: "PER", "SCPI", "Retraite")
 - "summary": résumé pour la carte blog (1-2 phrases, max 200 caractères)
 - "body_html": le contenu HTML de l'article (utilise h2, p, ul/li, strong, div class="highlight-box" pour les astuces). Indente avec 12 espaces.
-- "image_query": 2-3 mots-clés en anglais pour Unsplash. Cherche une VRAIE PHOTO (pas d'illustration ni d'IA) : paysage urbain, bureau, famille, immobilier, etc. Sois concret et visuel (ex: "paris apartment building", "family financial planning", "office meeting documents")
 - "linkedin_post": post LinkedIn de teasing (1-2 phrases, ton personnel comme si Carine écrivait, avec un lien vers l'article sous la forme {SITE_URL}/blog/[slug]). Max 300 caractères. Ajoute 2-3 hashtags pertinents."""
 
     print("Calling Claude API...")
@@ -420,32 +352,21 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
     breadcrumb_short = data["breadcrumb_short"]
     summary = data["summary"]
     body_html = data["body_html"]
-    image_query = data["image_query"]
     linkedin_post = data["linkedin_post"]
 
     print(f"Article generated: {title} ({slug})")
 
-    # 3. Download image
-    forced_image = os.environ.get("IMAGE_URL", "").strip()
-    img_path = download_image(slug, query=image_query, forced_url=forced_image)
-    image_warning = ""
-    if forced_image and img_path and "unsplash" not in str(img_path):
-        pass  # forced image worked
-    elif forced_image:
-        image_warning = "\n> **Attention** : l'image fournie n'a pas pu être téléchargée. Une image Unsplash a été utilisée à la place. Vous pouvez la remplacer en commentant cette PR avec `image: URL`.\n"
-
-    # 4. Write article HTML
+    # 3. Write article HTML
     article_html = generate_article_html(
         title, slug, meta_description, breadcrumb_short, body_html, today,
-        has_image=img_path is not None,
     )
     article_path = f"{BLOG_DIR}/{slug}.html"
     with open(article_path, "w", encoding="utf-8") as f:
         f.write(article_html)
     print(f"Article written: {article_path}")
 
-    # 5. Update blog.html with new card
-    add_blog_card(slug, title, summary, today, img_path is not None)
+    # 4. Update blog.html with new card
+    add_blog_card(slug, title, summary, today)
 
     # 6. Update sitemap.xml
     update_sitemap(slug, today)
@@ -463,15 +384,18 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
 
 ### Aperçu
 {summary}
-{image_warning}
+
 ### Post LinkedIn (à copier-coller)
 ```
 {linkedin_post}
 ```
 
+### Ajouter une image
+Glissez-déposez une image dans un commentaire ci-dessous. Le bot l'intégrera automatiquement à l'article.
+
 ---
 *Relisez l'article et le teasing LinkedIn. Mergez la PR pour publier sur le site, puis postez le teasing sur LinkedIn.*
-*Vous pouvez aussi commenter cette PR pour demander des modifications.*
+*Vous pouvez aussi commenter cette PR pour demander des modifications texte.*
 """
     with open("pr-description.md", "w", encoding="utf-8") as f:
         f.write(pr_body)

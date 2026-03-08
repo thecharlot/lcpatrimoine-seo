@@ -61,8 +61,9 @@ def extract_image_url(comment):
         if re.search(r'\.(jpg|jpeg|png|webp|gif)(\?\S*)?$', url, re.IGNORECASE):
             return url
 
-        # Domaine connu de banque d'images → c'est une image
-        image_domains = ['unsplash.com', 'images.unsplash.com', 'pexels.com', 'images.pexels.com',
+        # Domaine connu d'images (banques + GitHub drag & drop)
+        image_domains = ['user-images.githubusercontent.com', 'github.com/user-attachments',
+                         'unsplash.com', 'images.unsplash.com', 'pexels.com', 'images.pexels.com',
                          'pixabay.com', 'cdn.pixabay.com', 'img.freepik.com', 'i.imgur.com']
         if any(d in url for d in image_domains):
             return url
@@ -80,7 +81,9 @@ def replace_image(slug, image_url):
     img_path = f"{BLOG_DIR}/img/{slug}.jpg"
 
     print(f"Downloading image: {image_url}")
-    resp = requests.get(image_url, timeout=30)
+    resp = requests.get(image_url, timeout=30, headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    })
     resp.raise_for_status()
 
     with open(img_path, "wb") as f:
