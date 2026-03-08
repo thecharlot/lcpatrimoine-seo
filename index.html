@@ -730,16 +730,17 @@
             });
         });
 
-        // Smooth scroll with nav offset
+        // Smooth scroll with nav offset (2px extra to avoid sub-pixel gap on Android)
+        function scrollToTarget(target) {
+            var navH = document.querySelector('nav').offsetHeight;
+            var y = target.getBoundingClientRect().top + window.pageYOffset - navH + 2;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+
         document.querySelectorAll('a[href^="#"]').forEach(function(a) {
             a.addEventListener('click', function(e) {
                 var t = document.querySelector(this.getAttribute('href'));
-                if (t) {
-                    e.preventDefault();
-                    var navH = document.querySelector('nav').offsetHeight;
-                    var y = t.getBoundingClientRect().top + window.pageYOffset - navH;
-                    window.scrollTo({ top: y, behavior: 'smooth' });
-                }
+                if (t) { e.preventDefault(); scrollToTarget(t); }
             });
         });
 
@@ -748,12 +749,8 @@
             window.addEventListener('load', function() {
                 setTimeout(function() {
                     var target = document.querySelector(window.location.hash);
-                    if (target) {
-                        var navH = document.querySelector('nav').offsetHeight;
-                        var y = target.getBoundingClientRect().top + window.pageYOffset - navH;
-                        window.scrollTo({ top: y, behavior: 'smooth' });
-                    }
-                }, 150);
+                    if (target) scrollToTarget(target);
+                }, 200);
             });
         }
     </script>
