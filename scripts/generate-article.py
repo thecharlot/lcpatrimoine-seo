@@ -23,12 +23,27 @@ STYLE_VERSION = "23"
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 UNSPLASH_ACCESS_KEY = os.environ.get("UNSPLASH_ACCESS_KEY", "")
 
-# Flux RSS de sites financiers français pour récupérer l'actualité
+# Flux RSS : patrimoine, finance, économie, immobilier, fiscalité
 RSS_FEEDS = [
+    # Patrimoine & finances perso
     "https://www.lesechos.fr/rss/patrimoine.xml",
     "https://www.capital.fr/votre-argent/feed",
     "https://www.lefigaro.fr/rss/figaro_placement.xml",
     "https://www.moneyvox.fr/rss/actu.xml",
+    # Économie générale
+    "https://www.lesechos.fr/rss/economie-france.xml",
+    "https://www.lefigaro.fr/rss/figaro_conjoncture.xml",
+    "https://www.france24.com/fr/éco-tech/rss",
+    "https://www.bfmtv.com/rss/economie/",
+    # Immobilier
+    "https://www.lesechos.fr/rss/immobilier.xml",
+    "https://www.lefigaro.fr/rss/figaro_immobilier.xml",
+    "https://edito.seloger.com/feed",
+    # Retraite & social
+    "https://www.previssima.fr/feed",
+    # Fiscalité & droit
+    "https://www.legifiscal.fr/rss.xml",
+    "https://www.vie-publique.fr/rss/actualite.xml",
 ]
 
 # ---------------------------------------------------------------------------
@@ -44,7 +59,7 @@ def fetch_recent_headlines():
             resp.raise_for_status()
             root = ET.fromstring(resp.content)
             # RSS 2.0 format
-            for item in root.findall(".//item")[:5]:
+            for item in root.findall(".//item")[:3]:
                 title_el = item.find("title")
                 if title_el is not None and title_el.text:
                     headlines.append(title_el.text.strip())
@@ -57,7 +72,7 @@ def fetch_recent_headlines():
         if h not in seen:
             seen.add(h)
             unique.append(h)
-    return unique[:20]
+    return unique[:40]
 
 def get_existing_articles():
     """Return list of (slug, title) for all existing blog articles."""
