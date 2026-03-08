@@ -67,7 +67,7 @@ def extract_image_url(comment):
 
 
 def replace_image(slug, image_url):
-    """Download image and replace the article's image."""
+    """Download image and update the article HTML to use the local path."""
     os.makedirs(f"{BLOG_DIR}/img", exist_ok=True)
     img_path = f"{BLOG_DIR}/img/{slug}.jpg"
 
@@ -77,7 +77,42 @@ def replace_image(slug, image_url):
 
     with open(img_path, "wb") as f:
         f.write(resp.content)
-    print(f"Image replaced: {img_path}")
+    print(f"Image saved: {img_path}")
+
+    # Update article HTML to use local image path
+    article_path = f"{BLOG_DIR}/{slug}.html"
+    if os.path.exists(article_path):
+        with open(article_path, "r", encoding="utf-8") as f:
+            html = f.read()
+
+        local_img = f'img/{slug}.jpg'
+        # Replace any existing <img> in the article content (external URL or old local path)
+        if f'<img src="{local_img}"' in html:
+            print("Article already uses local image path.")
+        elif '<img src="' in html:
+            # Replace the first img src in the page-content section
+            html = re.sub(
+                r'(<section class="page-content">.*?<img src=")([^"]+)(")',
+                rf'\g<1>{local_img}\3',
+                html,
+                count=1,
+                flags=re.DOTALL,
+            )
+            with open(article_path, "w", encoding="utf-8") as f:
+                f.write(html)
+            print(f"Article HTML updated to use {local_img}")
+        else:
+            # No image tag yet — insert one at the top of the content
+            img_tag = f'            <img src="{local_img}" alt="{slug.replace("-", " ").title()}" style="width:100%;max-height:400px;object-fit:cover;border-radius:12px;margin-bottom:2rem;">\n'
+            html = html.replace(
+                '<section class="page-content">\n        <div class="container">\n',
+                f'<section class="page-content">\n        <div class="container">\n{img_tag}',
+                1,
+            )
+            with open(article_path, "w", encoding="utf-8") as f:
+                f.write(html)
+            print(f"Image tag inserted in article.")
+
     return img_path
 
 
