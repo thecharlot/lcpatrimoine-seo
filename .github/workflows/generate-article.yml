@@ -71,11 +71,10 @@ jobs:
         id: title
         run: |
           if [ -f article-title.txt ]; then
-            {
-              echo "value<<TITLEEOF"
-              cat article-title.txt
-              echo "TITLEEOF"
-            } >> $GITHUB_OUTPUT
+            echo "value<<TITLEEOF" >> $GITHUB_OUTPUT
+            cat article-title.txt >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+            echo "TITLEEOF" >> $GITHUB_OUTPUT
             rm article-title.txt
           else
             echo "value=Nouvel article de blog" >> $GITHUB_OUTPUT
