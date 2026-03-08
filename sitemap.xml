@@ -31,6 +31,26 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.lcpatrimoine.net/blog</loc>
+        <lastmod>2026-03-08</lastmod>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://www.lcpatrimoine.net/blog/per-comment-reduire-ses-impots</loc>
+        <lastmod>2026-03-08</lastmod>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://www.lcpatrimoine.net/blog/assurance-emprunteur-loi-lemoine</loc>
+        <lastmod>2026-03-08</lastmod>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://www.lcpatrimoine.net/blog/5-erreurs-gestion-patrimoine</loc>
+        <lastmod>2026-03-08</lastmod>
+        <priority>0.6</priority>
+    </url>
+    <url>
         <loc>https://www.lcpatrimoine.net/mentions-legales</loc>
         <lastmod>2026-03-07</lastmod>
         <priority>0.3</priority>

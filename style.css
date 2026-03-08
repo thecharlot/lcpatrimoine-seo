@@ -971,6 +971,76 @@ section { padding: 80px 0; }
     margin-top: 14px;
 }
 
+/* ─── LinkedIn button ─── */
+.linkedin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 28px;
+    padding: 12px 24px;
+    background: #0A66C2;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.linkedin-btn:hover {
+    background: #004182;
+}
+
+/* ─── Blog cards ─── */
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 48px;
+}
+
+.blog-card {
+    background: var(--blanc);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+}
+
+.blog-card-body {
+    padding: 28px;
+}
+
+.blog-card-date {
+    font-size: 0.8rem;
+    color: var(--or);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.blog-card-body h3 {
+    font-size: 1.1rem;
+    color: var(--bleu-nuit);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.blog-card-body p {
+    font-size: 0.92rem;
+    color: var(--gris);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.blog-card-body .service-link {
+    margin-top: 0;
+}
+
 /* ─── Footer ─── */
 footer {
     background: var(--bleu-nuit);
@@ -1038,6 +1108,7 @@ footer h4 {
     .why-us .container { grid-template-columns: 1fr; }
     .zones-grid { grid-template-columns: repeat(2, 1fr); }
     .contact-grid { grid-template-columns: 1fr; }
+    .blog-grid { grid-template-columns: 1fr 1fr; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
     .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
     .about-content { grid-template-columns: 1fr; }
@@ -1063,6 +1134,7 @@ footer h4 {
     .section-header h2 { font-size: 1.6rem; }
     .apropos-title { font-size: 1.3rem !important; }
     section { padding: 60px 0; scroll-margin-top: 120px; }
+    .blog-grid { grid-template-columns: 1fr; }
     .logo img { height: 60px; }
     .nav-links { display: none; }
     .menu-toggle { display: block; }
