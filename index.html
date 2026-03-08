@@ -12,7 +12,7 @@
     <link rel="canonical" href="https://www.lcpatrimoine.net">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
-    <link rel="stylesheet" href="style.css?v=17">
+    <link rel="stylesheet" href="style.css?v=18">
 
     <meta property="og:title" content="LC Patrimoine — Gestion de patrimoine en Île-de-France">
     <meta property="og:description" content="Cabinet indépendant. Défiscalisation, placements, retraite, succession. Bilan patrimonial gratuit.">
@@ -395,46 +395,43 @@
                         <p style="margin:8px 0 0; font-size:0.9rem; color:var(--gris);">À domicile en Île-de-France ou en visioconférence.</p>
                     </div>
                 </div>
-                <form class="contact-form" id="contactForm" action="https://formsubmit.co/carine.savajols@lcpatrimoine.net" method="POST">
-                    <input type="hidden" name="_subject" value="Nouvelle demande de bilan - LC Patrimoine">
-                    <input type="hidden" name="_next" value="https://www.lcpatrimoine.net/merci.html">
-                    <input type="hidden" name="_template" value="table">
+                <form class="contact-form" id="contactForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="prenom">Prénom</label>
-                            <input type="text" id="prenom" name="Prénom" required placeholder="Votre prénom">
+                            <input type="text" id="prenom" name="prenom" required placeholder="Votre prénom">
                         </div>
                         <div class="form-group">
                             <label for="nom">Nom</label>
-                            <input type="text" id="nom" name="Nom" required placeholder="Votre nom">
+                            <input type="text" id="nom" name="nom" required placeholder="Votre nom">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" id="email" name="Email" required placeholder="votre@email.com">
+                            <input type="email" id="email" name="email" required placeholder="votre@email.com">
                         </div>
                         <div class="form-group">
                             <label for="telephone">Téléphone</label>
-                            <input type="tel" id="telephone" name="Téléphone" required placeholder="06 12 34 56 78">
+                            <input type="tel" id="telephone" name="telephone" required placeholder="06 12 34 56 78">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="sujet">Sujet</label>
-                        <select id="sujet" name="Sujet">
+                        <select id="sujet" name="sujet">
                             <option value="">-- Choisir --</option>
                             <option value="Bilan patrimonial">Bilan patrimonial</option>
-                            <option value="Réduire mes impôts">Réduire mes impôts</option>
-                            <option value="Optimiser mon épargne">Optimiser mon épargne</option>
+                            <option value="Reduire mes impots">Réduire mes impôts</option>
+                            <option value="Optimiser mon epargne">Optimiser mon épargne</option>
                             <option value="Investissement immobilier">Investissement immobilier</option>
-                            <option value="Préparer ma retraite">Préparer ma retraite</option>
+                            <option value="Preparer ma retraite">Préparer ma retraite</option>
                             <option value="Transmission / Succession">Transmission / Succession</option>
                             <option value="Autre">Autre</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="message">Message (optionnel)</label>
-                        <textarea id="message" name="Message" placeholder="Votre situation ou votre question en quelques mots..."></textarea>
+                        <textarea id="message" name="message" placeholder="Votre situation ou votre question en quelques mots..."></textarea>
                     </div>
                     <button type="submit" class="form-submit">Demander mon bilan gratuit</button>
                     <p class="form-note">Vos données restent confidentielles.</p>
@@ -604,6 +601,42 @@
             r.classList.add('visible');
             r.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+
+        // Contact form
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var btn = this.querySelector('.form-submit');
+            btn.textContent = 'Envoi en cours...';
+            btn.disabled = true;
+            fetch('https://formsubmit.co/ajax/carine.savajols@lcpatrimoine.net', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    prenom: this.prenom.value,
+                    nom: this.nom.value,
+                    email: this.email.value,
+                    telephone: this.telephone.value,
+                    sujet: this.sujet.value,
+                    message: this.message.value,
+                    _subject: 'Nouvelle demande de bilan - LC Patrimoine'
+                })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    window.location.href = 'merci.html';
+                } else {
+                    alert('Erreur lors de l\'envoi. Veuillez nous contacter au 06 22 18 78 28.');
+                    btn.textContent = 'Demander mon bilan gratuit';
+                    btn.disabled = false;
+                }
+            })
+            .catch(function() {
+                alert('Erreur reseau. Veuillez nous contacter au 06 22 18 78 28.');
+                btn.textContent = 'Demander mon bilan gratuit';
+                btn.disabled = false;
+            });
+        });
 
         // Smooth scroll with nav offset
         document.querySelectorAll('a[href^="#"]').forEach(function(a) {
