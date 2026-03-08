@@ -96,20 +96,30 @@ def download_image(slug, query="", forced_url=""):
     os.makedirs(f"{BLOG_DIR}/img", exist_ok=True)
     img_path = f"{BLOG_DIR}/img/{slug}.jpg"
 
-    headers = {"User-Agent": "Mozilla/5.0 LCPatrimoine-Bot"}
+    browser_ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    headers = {"User-Agent": browser_ua}
 
     # Option 1: forced image URL
     if forced_url:
         print(f"Downloading forced image: {forced_url}")
         try:
-            img_resp = requests.get(forced_url, timeout=30, headers=headers)
+            img_resp = requests.get(forced_url, timeout=30, headers={
+                "User-Agent": browser_ua,
+                "Accept": "image/webp,image/apng,image/*,*/*;q=0.8",
+                "Referer": forced_url,
+            })
             img_resp.raise_for_status()
-            with open(img_path, "wb") as f:
-                f.write(img_resp.content)
-            print(f"Image saved: {img_path}")
-            return img_path
+            # Verify it's actually an image (not an HTML error page)
+            content_type = img_resp.headers.get("Content-Type", "")
+            if "image" in content_type or len(img_resp.content) > 10000:
+                with open(img_path, "wb") as f:
+                    f.write(img_resp.content)
+                print(f"Image saved: {img_path}")
+                return img_path
+            else:
+                print(f"Warning: URL returned non-image content ({content_type}). Falling back to Unsplash.")
         except Exception as e:
-            print(f"Warning: could not download forced image: {e}")
+            print(f"WARNING: could not download forced image: {e}")
             print("Falling back to Unsplash search.")
 
     # Option 2: Unsplash search
@@ -418,6 +428,11 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
     # 3. Download image
     forced_image = os.environ.get("IMAGE_URL", "").strip()
     img_path = download_image(slug, query=image_query, forced_url=forced_image)
+    image_warning = ""
+    if forced_image and img_path and "unsplash" not in str(img_path):
+        pass  # forced image worked
+    elif forced_image:
+        image_warning = "\n> **Attention** : l'image fournie n'a pas pu être téléchargée. Une image Unsplash a été utilisée à la place. Vous pouvez la remplacer en commentant cette PR avec `image: URL`.\n"
 
     # 4. Write article HTML
     article_html = generate_article_html(
@@ -448,7 +463,7 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
 
 ### Aperçu
 {summary}
-
+{image_warning}
 ### Post LinkedIn (à copier-coller)
 ```
 {linkedin_post}
