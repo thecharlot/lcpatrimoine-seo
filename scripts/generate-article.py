@@ -274,10 +274,17 @@ def main():
 
     # 2. Call Claude to generate article content
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    topic_hint = os.environ.get("TOPIC_HINT", "").strip()
+
+    topic_instruction = (
+        f'**Thème demandé** : {topic_hint}\nÉcris l\'article sur ce thème en faisant le lien avec les solutions patrimoniales de Carine.'
+        if topic_hint
+        else '**Mission** : Rédige un nouvel article de blog (800-1200 mots) en partant d\'une actualité récente (nationale ou internationale) et en faisant le lien avec les solutions patrimoniales que Carine propose.'
+    )
 
     prompt = f"""Tu es le rédacteur du blog de LC Patrimoine (lcpatrimoine.net), cabinet indépendant de gestion de patrimoine en Île-de-France dirigé par Carine Savajols.
 
-**Mission** : Rédige un nouvel article de blog (800-1200 mots) en partant d'une actualité récente (nationale ou internationale) et en faisant le lien avec les solutions patrimoniales que Carine propose.
+{topic_instruction}
 
 **Domaines** : défiscalisation, investissement, retraite, transmission, assurance emprunteur.
 **Outils à mettre en avant** : PER, Girardin, GFI, Denormandie, assurance-vie, SCPI, contrat de capitalisation, LMNP, démembrement, SCI, assurance emprunteur.

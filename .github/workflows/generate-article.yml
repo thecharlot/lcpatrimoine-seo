@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '0 8 * * 1'  # Lundi 8h UTC
   workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Thème ou angle souhaité (laisser vide = choix automatique)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -28,17 +33,13 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+          TOPIC_HINT: ${{ github.event.inputs.topic }}
         run: python scripts/generate-article.py
 
       - name: Read article metadata
         id: meta
         run: |
-          if [ -f article-title.txt ]; then
-            echo "title=$(cat article-title.txt)" >> $GITHUB_OUTPUT
-            rm article-title.txt
-          else
-            echo "title=Nouvel article de blog" >> $GITHUB_OUTPUT
-          fi
+          # Utilise le slug (ASCII-safe) pour le titre de PR si le titre contient des accents
           if [ -f article-slug.txt ]; then
             echo "slug=$(cat article-slug.txt)" >> $GITHUB_OUTPUT
             rm article-slug.txt
@@ -52,24 +53,40 @@ jobs:
           BRANCH="blog/${{ github.run_id }}"
           SLUG="${{ steps.meta.outputs.slug }}"
           PREVIEW="https://raw.githack.com/thecharlot/lcpatrimoine-seo/${BRANCH}/blog/${SLUG}.html"
-          echo "body<<EOF" >> $GITHUB_OUTPUT
-          if [ -f pr-description.md ]; then
-            cat pr-description.md >> $GITHUB_OUTPUT
-            rm pr-description.md
+          {
+            echo "body<<PREOF"
+            if [ -f pr-description.md ]; then
+              cat pr-description.md
+              rm pr-description.md
+            else
+              echo "Nouvel article de blog généré automatiquement."
+            fi
+            echo ""
+            echo "### Prévisualisation"
+            echo "[$PREVIEW]($PREVIEW)"
+            echo "PREOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Read PR title
+        id: title
+        run: |
+          if [ -f article-title.txt ]; then
+            {
+              echo "value<<TITLEEOF"
+              cat article-title.txt
+              echo "TITLEEOF"
+            } >> $GITHUB_OUTPUT
+            rm article-title.txt
           else
-            echo "Nouvel article de blog généré automatiquement." >> $GITHUB_OUTPUT
+            echo "value=Nouvel article de blog" >> $GITHUB_OUTPUT
           fi
-          echo "" >> $GITHUB_OUTPUT
-          echo "### Prévisualisation" >> $GITHUB_OUTPUT
-          echo "[$PREVIEW]($PREVIEW)" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "blog: ${{ steps.meta.outputs.title }}"
+          commit-message: "blog: ${{ steps.meta.outputs.slug }}"
           branch: blog/${{ github.run_id }}
-          title: "📝 ${{ steps.meta.outputs.title }}"
+          title: "📝 ${{ steps.title.outputs.value }}"
           body: ${{ steps.pr_body.outputs.body }}
           labels: blog-post
