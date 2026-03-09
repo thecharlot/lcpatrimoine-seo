@@ -18,7 +18,7 @@ BLOG_DIR = "blog"
 BLOG_HTML = "blog.html"
 SITEMAP = "sitemap.xml"
 SITE_URL = "https://www.lcpatrimoine.net"
-STYLE_VERSION = "23"
+STYLE_VERSION = "24"
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 
@@ -177,6 +177,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
                     <ul class="footer-links">
                         <li><a href="../defiscalisation.html">Défiscalisation</a></li>
                         <li><a href="../investissement.html">Investissement</a></li>
+                        <li><a href="../immobilier.html">Immobilier</a></li>
                         <li><a href="../retraite.html">Retraite</a></li>
                         <li><a href="../transmission.html">Transmission</a></li>
                         <li><a href="../assurance-emprunteur.html">Assurance emprunteur</a></li>
