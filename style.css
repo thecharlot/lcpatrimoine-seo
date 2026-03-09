@@ -214,6 +214,24 @@ nav .container {
     color: var(--blanc);
 }
 
+.btn-simulateur {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: var(--or);
+    color: var(--blanc);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-simulateur:hover {
+    background: var(--bleu-nuit);
+    color: var(--blanc);
+}
+
 /* ─── Hero ─── */
 .hero {
     background: var(--bleu-nuit);
