@@ -94,6 +94,9 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>{title} | LC Patrimoine</title>
     <meta name="description" content="{meta_description}">
     <link rel="canonical" href="{SITE_URL}/blog/{slug}">
@@ -316,6 +319,7 @@ def main():
 **Ton** : accessible, concret, professionnel mais pas jargonneux. Tu tutoies pas le lecteur, tu le vouvoies.
 **Sources** : quand tu cites un chiffre, une loi, une étude ou une info factuelle importante, ajoute un lien source dans le HTML (balise <a href="..." target="_blank">). Utilise les liens des actualités ci-dessus ou des sources officielles (INSEE, service-public.fr, legifrance.gouv.fr, Banque de France, etc.).
 **IMPORTANT** : Nous sommes en {today[:4]}. Ne fais JAMAIS référence à des événements d'années passées comme s'ils étaient actuels.
+**IMPORTANT** : Ne parle JAMAIS de "premier rendez-vous". L'offre est "bilan et rendez-vous gratuits" (pas de notion de "premier").
 
 **Articles existants (à ne pas répéter ni trop chevaucher)** :
 {existing_info}
