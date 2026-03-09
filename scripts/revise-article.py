@@ -114,7 +114,7 @@ def replace_image(slug, image_url):
             print(f"Article HTML updated to use {local_img}")
         else:
             # No image tag yet — insert one at the top of the content
-            img_tag = f'            <img src="{local_img}" alt="{slug.replace("-", " ").title()}" style="width:100%;max-height:400px;object-fit:cover;border-radius:12px;margin-bottom:2rem;">\n'
+            img_tag = f'            <img src="{local_img}" alt="{slug.replace("-", " ").title()}" class="article-img">\n'
             html = html.replace(
                 '<section class="page-content">\n        <div class="container">\n',
                 f'<section class="page-content">\n        <div class="container">\n{img_tag}',
