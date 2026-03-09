@@ -55,7 +55,7 @@ def extract_image_url(comment):
 
     for url in urls:
         # Nettoie les caractères de ponctuation en fin d'URL
-        url = url.rstrip('.,;:!?)>]')
+        url = url.rstrip('.,;:!?)>]\'"')
 
         # URL avec extension image → c'est une image
         if re.search(r'\.(jpg|jpeg|png|webp|gif)(\?\S*)?$', url, re.IGNORECASE):
@@ -70,7 +70,7 @@ def extract_image_url(comment):
 
     # Si le commentaire parle d'image et contient une URL, on tente
     if re.search(r'image|photo|illustration|visuel', comment, re.IGNORECASE) and urls:
-        return urls[0].rstrip('.,;:!?)>]')
+        return urls[0].rstrip('.,;:!?)>]\'"')
 
     return None
 
