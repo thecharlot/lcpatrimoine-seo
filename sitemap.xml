@@ -37,7 +37,7 @@
     </url>
     <url>
         <loc>https://www.lcpatrimoine.net/blog</loc>
-        <lastmod>2026-03-08</lastmod>
+        <lastmod>2026-03-16</lastmod>
         <priority>0.7</priority>
     </url>
     <url>
@@ -123,6 +123,11 @@
     <url>
         <loc>https://www.lcpatrimoine.net/blog/courbe-friggit-immobilier-2026</loc>
         <lastmod>2026-03-08</lastmod>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://www.lcpatrimoine.net/blog/500-euros-mensuels-retraite-placements</loc>
+        <lastmod>2026-03-16</lastmod>
         <priority>0.6</priority>
     </url>
 </urlset>
