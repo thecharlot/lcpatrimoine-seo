@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bandeau LinkedIn — LC Patrimoine</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #e0e0e0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', Arial, sans-serif; }
+
+        .banner {
+            width: 1584px;
+            height: 396px;
+            background: #0B2F5B;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 60px 0 0;
+            gap: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Motif décoratif subtil */
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -50px;
+            width: 500px;
+            height: 500px;
+            border: 1px solid rgba(212, 162, 74, 0.08);
+            border-radius: 50%;
+        }
+        .banner::after {
+            content: '';
+            position: absolute;
+            top: -200px;
+            right: -150px;
+            width: 700px;
+            height: 700px;
+            border: 1px solid rgba(212, 162, 74, 0.05);
+            border-radius: 50%;
+        }
+
+        .logo-container {
+            flex-shrink: 0;
+        }
+
+        .logo-container img {
+            height: 200px;
+            width: auto;
+        }
+
+        .separator {
+            width: 2px;
+            height: 180px;
+            background: linear-gradient(to bottom, transparent, #D4A24A, transparent);
+            flex-shrink: 0;
+        }
+
+        .text-content {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            z-index: 1;
+            text-align: right;
+        }
+
+        .text-content h1 {
+            color: #ffffff;
+            font-size: 54px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            line-height: 1.15;
+        }
+
+        .text-content .services {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .text-content .cta {
+            color: #D4A24A;
+            font-size: 26px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        /* Ligne dorée en bas */
+        .gold-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, #D4A24A, #E2B65E, #D4A24A);
+        }
+
+        .instructions {
+            margin-top: 30px;
+            background: #fff;
+            padding: 24px 32px;
+            border-radius: 8px;
+            max-width: 1584px;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .instructions h2 { font-size: 16px; margin-bottom: 8px; }
+        .instructions ol { padding-left: 20px; }
+        .instructions code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="banner">
+            <div class="text-content">
+                <h1>Gestion de patrimoine indépendante</h1>
+                <div class="services">Défiscalisation · Investissement · Retraite · Transmission</div>
+                <div class="cta">06 22 18 78 28 · www.lcpatrimoine.net</div>
+            </div>
+            <div class="separator"></div>
+            <div class="logo-container">
+                <img src="logo.png" alt="LC Patrimoine">
+            </div>
+            <div class="gold-line"></div>
+        </div>
+
+        <div class="instructions">
+            <h2>Comment capturer le bandeau :</h2>
+            <ol>
+                <li>Ouvrir cette page dans Chrome ou Firefox</li>
+                <li>Clic droit sur le bandeau bleu → <code>Inspecter</code></li>
+                <li>Clic droit sur l'élément <code>&lt;div class="banner"&gt;</code> dans l'inspecteur → <code>Capture node screenshot</code></li>
+                <li>L'image sera téléchargée en 1584 x 396 px, prête pour LinkedIn</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
