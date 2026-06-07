@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bannières Google Ads — LC Patrimoine</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #e0e0e0; display: flex; flex-direction: column; align-items: center; padding: 40px; gap: 40px; font-family: 'Segoe UI', Arial, sans-serif; }
+
+        h2 { font-size: 16px; color: #333; margin-bottom: 8px; }
+
+        .banner {
+            background: #0B2F5B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -50px;
+            width: 500px;
+            height: 500px;
+            border: 1px solid rgba(212, 162, 74, 0.08);
+            border-radius: 50%;
+        }
+
+        .gold-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, #D4A24A, #E2B65E, #D4A24A);
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 14px;
+            z-index: 1;
+        }
+
+        .content img { width: auto; }
+        .content h1 { color: #ffffff; font-weight: 700; letter-spacing: -0.5px; line-height: 1.15; }
+        .content .services { color: rgba(255, 255, 255, 0.7); font-weight: 400; }
+        .content .cta { color: #D4A24A; font-weight: 600; }
+        .content .cta-btn {
+            background: #D4A24A;
+            color: #0B2F5B;
+            font-weight: 700;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* --- 1200x628 Paysage --- */
+        .banner-landscape {
+            width: 1200px;
+            height: 628px;
+            flex-direction: row;
+            justify-content: center;
+            gap: 50px;
+            padding: 0 60px;
+        }
+        .banner-landscape .content { align-items: flex-end; text-align: right; }
+        .banner-landscape .content img { height: 180px; }
+        .banner-landscape .content h1 { font-size: 44px; }
+        .banner-landscape .content .services { font-size: 22px; }
+        .banner-landscape .content .cta { font-size: 20px; }
+        .banner-landscape .content .cta-btn { font-size: 22px; padding: 14px 32px; margin-top: 8px; }
+        .banner-landscape .separator {
+            width: 2px;
+            height: 180px;
+            background: linear-gradient(to bottom, transparent, #D4A24A, transparent);
+            flex-shrink: 0;
+        }
+        .banner-landscape .logo-side { flex-shrink: 0; }
+        .banner-landscape .logo-side img { height: 180px; width: auto; }
+
+        /* --- 1200x1200 Carré --- */
+        .banner-square {
+            width: 1200px;
+            height: 1200px;
+            padding: 80px 60px;
+        }
+        .banner-square .content { gap: 24px; }
+        .banner-square .content img { height: 200px; }
+        .banner-square .content h1 { font-size: 52px; }
+        .banner-square .content .services { font-size: 28px; }
+        .banner-square .content .cta { font-size: 24px; }
+        .banner-square .content .cta-btn { font-size: 26px; padding: 18px 40px; margin-top: 12px; }
+        .banner-square .separator-h {
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #D4A24A, transparent);
+        }
+
+        /* --- 960x1200 Portrait --- */
+        .banner-portrait {
+            width: 960px;
+            height: 1200px;
+            padding: 80px 50px;
+        }
+        .banner-portrait .content { gap: 22px; }
+        .banner-portrait .content img { height: 180px; }
+        .banner-portrait .content h1 { font-size: 46px; }
+        .banner-portrait .content .services { font-size: 26px; }
+        .banner-portrait .content .cta { font-size: 22px; }
+        .banner-portrait .content .cta-btn { font-size: 24px; padding: 16px 36px; margin-top: 10px; }
+        .banner-portrait .separator-h {
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #D4A24A, transparent);
+        }
+
+        .instructions {
+            background: #fff;
+            padding: 24px 32px;
+            border-radius: 8px;
+            max-width: 1200px;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+        .instructions h2 { font-size: 16px; margin-bottom: 8px; }
+        .instructions ol { padding-left: 20px; }
+        .instructions code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <!-- 1200x628 PAYSAGE -->
+    <h2>1200 × 628 (Paysage)</h2>
+    <div class="banner banner-landscape">
+        <div class="content">
+            <h1>Gestion de patrimoine<br>indépendante</h1>
+            <div class="services">Défiscalisation · Investissement · Retraite · Transmission</div>
+            <div class="cta">Bilan patrimonial gratuit</div>
+            <span class="cta-btn">Prendre rendez-vous</span>
+        </div>
+        <div class="separator"></div>
+        <div class="logo-side">
+            <img src="logo.png" alt="LC Patrimoine">
+        </div>
+        <div class="gold-line"></div>
+    </div>
+
+    <!-- 1200x1200 CARRÉ -->
+    <h2>1200 × 1200 (Carré)</h2>
+    <div class="banner banner-square">
+        <div class="content">
+            <img src="logo.png" alt="LC Patrimoine">
+            <div class="separator-h"></div>
+            <h1>Gestion de patrimoine<br>indépendante</h1>
+            <div class="services">Défiscalisation · Investissement<br>Retraite · Transmission</div>
+            <div class="separator-h"></div>
+            <div class="cta">Bilan patrimonial gratuit</div>
+            <span class="cta-btn">Prendre rendez-vous</span>
+        </div>
+        <div class="gold-line"></div>
+    </div>
+
+    <!-- 960x1200 PORTRAIT -->
+    <h2>960 × 1200 (Portrait)</h2>
+    <div class="banner banner-portrait">
+        <div class="content">
+            <img src="logo.png" alt="LC Patrimoine">
+            <div class="separator-h"></div>
+            <h1>Gestion de patrimoine<br>indépendante</h1>
+            <div class="services">Défiscalisation · Investissement<br>Retraite · Transmission</div>
+            <div class="separator-h"></div>
+            <div class="cta">Bilan patrimonial gratuit</div>
+            <span class="cta-btn">Prendre rendez-vous</span>
+        </div>
+        <div class="gold-line"></div>
+    </div>
+
+    <div class="instructions">
+        <h2>Comment capturer chaque bannière :</h2>
+        <ol>
+            <li>Ouvrir cette page dans Chrome</li>
+            <li>Clic droit sur la bannière → <code>Inspecter</code></li>
+            <li>Dans l'inspecteur, clic droit sur <code>&lt;div class="banner banner-..."&gt;</code> → <code>Capture node screenshot</code></li>
+            <li>L'image sera téléchargée aux dimensions exactes</li>
+        </ol>
+    </div>
+
+</body>
+</html>
