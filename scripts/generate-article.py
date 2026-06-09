@@ -192,7 +192,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
                 <div>
                     <h4>Contact</h4>
                     <ul class="footer-links">
-                        <li>06 22 18 78 28</li>
+                        <li><a href="tel:+33622187828" style="color:inherit;text-decoration:none;">06 22 18 78 28</a></li>
                         <li>75 Rue Marignan</li>
                         <li>94210 Saint-Maur-des-Fossés</li>
                     </ul>
