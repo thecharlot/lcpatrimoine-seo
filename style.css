@@ -138,6 +138,37 @@ nav .container {
 
 .nav-linkedin:hover { color: var(--or) !important; }
 
+.nav-google {
+    display: flex;
+    align-items: center;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+    position: relative;
+}
+
+.nav-google:hover { opacity: 1; }
+
+.nav-google::after {
+    content: 'Consultez nos avis Google';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px;
+    background: var(--bleu-nuit);
+    color: var(--blanc);
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    border: 1px solid rgba(212,162,74,0.3);
+}
+
+.nav-google:hover::after { opacity: 1; }
+
 .menu-toggle {
     display: none;
     background: none;
