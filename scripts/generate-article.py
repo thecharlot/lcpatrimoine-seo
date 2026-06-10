@@ -99,6 +99,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
       function gtag(){{dataLayer.push(arguments);}}
       gtag('js', new Date());
       gtag('config', 'AW-18220726621');
+      gtag('event', 'conversion', {{'send_to': 'AW-18220726621/9zk1CPiVubwcEN3yqPBD'}});
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
