@@ -1035,9 +1035,11 @@ section { padding: 80px 0; scroll-margin-top: 140px; }
 .linkedin-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     margin-top: 8px;
     padding: 12px 24px;
+    width: 280px;
     background: #0A66C2;
     color: #fff;
     border-radius: 8px;
@@ -1054,9 +1056,11 @@ section { padding: 80px 0; scroll-margin-top: 140px; }
 .google-avis-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     margin-top: 8px;
     padding: 12px 24px;
+    width: 280px;
     background: #fff;
     color: #333;
     border-radius: 8px;
