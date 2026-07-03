@@ -138,6 +138,22 @@ nav .container {
 
 .nav-linkedin:hover { color: var(--or) !important; }
 
+.nav-call {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--or) !important;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    transition: color 0.3s !important;
+}
+
+.nav-call:hover { color: var(--or-clair) !important; }
+
+.nav-call svg { flex-shrink: 0; }
+
 
 .menu-toggle {
     display: none;
@@ -1230,6 +1246,8 @@ footer h4 {
     .logo img { height: 60px; }
     .nav-links { display: none; }
     .menu-toggle { display: block; }
+    .nav-linkedin { display: none; }
+    .nav-call { font-size: 0.95rem; gap: 6px; }
     .nav-links.open {
         display: flex;
         flex-direction: column;
