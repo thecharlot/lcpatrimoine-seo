@@ -147,7 +147,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
                 <li><a href="../blog.html">Blog</a></li>
                 <li><a href="../index.html#contact" class="nav-cta">Bilan gratuit</a></li>
             </ul>
-            <a href="tel:+33622187828" class="nav-call" aria-label="Appeler LC Patrimoine"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><span>06&nbsp;22&nbsp;18&nbsp;78&nbsp;28</span></a><button class="menu-toggle" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+            <a href="tel:+33622187828" onclick="gtag('event','conversion',{'send_to':'AW-18220726621/Dy7pCLi-6LscEN3yqPBD'});" class="nav-call" aria-label="Appeler LC Patrimoine"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><span>06&nbsp;22&nbsp;18&nbsp;78&nbsp;28</span></a><button class="menu-toggle" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
         </div>
     </nav>
 
@@ -201,7 +201,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
                 <div>
                     <h4>Contact</h4>
                     <ul class="footer-links">
-                        <li><a href="tel:+33622187828" style="color:inherit;text-decoration:none;">06 22 18 78 28</a></li>
+                        <li><a href="tel:+33622187828" onclick="gtag('event','conversion',{'send_to':'AW-18220726621/Dy7pCLi-6LscEN3yqPBD'});" style="color:inherit;text-decoration:none;">06 22 18 78 28</a></li>
                         <li>75 Rue Marignan</li>
                         <li>94210 Saint-Maur-des-Fossés</li>
                     </ul>
