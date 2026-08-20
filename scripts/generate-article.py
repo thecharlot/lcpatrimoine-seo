@@ -114,6 +114,10 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
     <meta property="og:type" content="article">
     <meta property="og:url" content="{SITE_URL}/blog/{slug}">
     <meta property="og:locale" content="fr_FR">
+    <meta property="og:image" content="{SITE_URL}/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="LC Patrimoine — gestion de patrimoine indépendante en Île-de-France">
     <script type="application/ld+json">
     {{
         "@context": "https://schema.org",
