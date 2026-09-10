@@ -1280,3 +1280,42 @@ footer h4 {
     .contact-detail .icon svg { width: 16px; height: 16px; }
     .contact-detail span { font-size: 0.85rem; }
 }
+
+/* Blocs de maillage interne — « À lire aussi » */
+.page-content .related-links {
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid #e5e7eb;
+}
+.page-content .related-links h3 {
+    margin: 0 0 16px;
+    font-size: 1.05rem;
+    color: var(--bleu-nuit);
+}
+.page-content .related-links ul {
+    list-style: none;
+    margin: 0;
+}
+.page-content .related-links li {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+.page-content .related-links a {
+    color: var(--bleu-nuit);
+    text-decoration: none;
+    border-bottom: 1px solid var(--or);
+    transition: color 0.2s;
+}
+.page-content .related-links a:hover {
+    color: var(--or);
+}
+.page-content .related-links .related-service {
+    color: var(--gris);
+    border-bottom-color: #d1d5db;
+    font-size: 0.95rem;
+}
+.page-content .related-links .related-service:hover {
+    color: var(--bleu-nuit);
+    border-bottom-color: var(--or);
+}
