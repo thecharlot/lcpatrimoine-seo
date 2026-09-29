@@ -275,7 +275,7 @@
             <div class="section-header">
                 <div class="section-label">Outil gratuit</div>
                 <h2>Estimez votre économie d'impôt</h2>
-                <p>Simulation indicative basée sur le barème 2026. Quatre exemples de dispositifs sont présentés ici : d'autres solutions existent selon votre situation. <a href="#contact" style="color:var(--or);">Contactez-nous</a> pour une étude complète.</p>
+                <p>Simulation indicative basée sur le barème 2026. Cinq exemples de dispositifs sont présentés ici : d'autres solutions existent selon votre situation. <a href="#contact" style="color:var(--or);">Contactez-nous</a> pour une étude complète.</p>
             </div>
             <div class="sim-box">
                 <div class="sim-field">
@@ -300,8 +300,9 @@
                     <select id="dispositif" onchange="toggleMoisInvest()">
                         <option value="per">PER (Plan Épargne Retraite)</option>
                         <option value="girardin">Girardin Industriel</option>
-                        <option value="gfi">GFI (Groupement Foncier d'Investissement)</option>
+                        <option value="gfi">GFI (Groupement Forestier d'Investissement)</option>
                         <option value="denormandie">Denormandie</option>
+                        <option value="jeanbrun">Jeanbrun (statut du bailleur privé)</option>
                     </select>
                 </div>
                 <div class="sim-field" id="moisInvestField" style="display:none;">
@@ -320,6 +321,18 @@
                         <option value="11">Novembre</option>
                         <option value="12">Décembre</option>
                     </select>
+                </div>
+                <div class="sim-field" id="jeanbrunLoyerField" style="display:none;">
+                    <label for="jeanbrunLoyer">Niveau de loyer</label>
+                    <select id="jeanbrunLoyer">
+                        <option value="intermediaire">Intermédiaire (amortissement 3,5 %/an)</option>
+                        <option value="social">Social (4,5 %/an)</option>
+                        <option value="tres-social">Très social (5,5 %/an)</option>
+                    </select>
+                </div>
+                <div class="sim-field" id="jeanbrunFonciersField" style="display:none;">
+                    <label for="revenusFonciers">Revenus fonciers nets annuels (&euro;, facultatif)</label>
+                    <input type="number" id="revenusFonciers" placeholder="Loyers du bien compris, après charges et intérêts" min="0" step="500">
                 </div>
                 <div class="sim-field">
                     <label for="investissement">Montant envisagé (&euro;)</label>
@@ -591,6 +604,8 @@
         function toggleMoisInvest() {
             var dispo = document.getElementById('dispositif').value;
             document.getElementById('moisInvestField').style.display = (dispo === 'girardin') ? '' : 'none';
+            document.getElementById('jeanbrunLoyerField').style.display = (dispo === 'jeanbrun') ? '' : 'none';
+            document.getElementById('jeanbrunFonciersField').style.display = (dispo === 'jeanbrun') ? '' : 'none';
         }
 
         function parseSituation() {
@@ -704,6 +719,34 @@
                 if (reducAnnuelle > impotAvant) {
                     breakdown += '<div class="sim-note">Réduction plafonnée à votre impôt dû (' + fmt(impotAvant) + ').</div>';
                 }
+            }
+
+            else if (dispo === 'jeanbrun') {
+                // Jeanbrun (neuf) : amortissement de 80 % du prix, taux et plafond selon le niveau de loyer
+                var niveaux = {
+                    'intermediaire': { taux: 0.035, plafond: 8000, nom: 'interm\u00e9diaire' },
+                    'social': { taux: 0.045, plafond: 10000, nom: 'social' },
+                    'tres-social': { taux: 0.055, plafond: 12000, nom: 'tr\u00e8s social' }
+                };
+                var niv = niveaux[document.getElementById('jeanbrunLoyer').value];
+                var base = Math.round(invest * 0.80);
+                var amortCalc = Math.round(base * niv.taux);
+                var amort = Math.min(amortCalc, niv.plafond);
+                var rfSaisi = document.getElementById('revenusFonciers').value;
+                var rf = rfSaisi === '' ? null : Math.max(0, parseFloat(rfSaisi) || 0);
+                var deduit = rf === null ? amort : Math.min(amort, rf);
+                var tauxGlobal = tmi + 17.2;
+                eco = Math.round(deduit * tauxGlobal / 100);
+                detail = '\u00c9conomie annuelle estim\u00e9e (Jeanbrun), soit ' + fmt(eco * 9) + ' sur les 9 ans d\'engagement';
+                breakdown = '<div class="sim-line"><span>Prix du bien</span><strong>' + fmt(invest) + '</strong></div>'
+                    + '<div class="sim-line"><span>Base amortissable (80 %)</span><strong>' + fmt(base) + '</strong></div>'
+                    + '<div class="sim-line"><span>Amortissement annuel (loyer ' + niv.nom + ', ' + (niv.taux * 100).toLocaleString('fr-FR') + ' %)</span><strong>' + fmt(amort) + '</strong></div>'
+                    + (amortCalc > niv.plafond ? '<div class="sim-note">Amortissement plafonn\u00e9 \u00e0 ' + fmt(niv.plafond) + ' par an pour un loyer ' + niv.nom + '.</div>' : '')
+                    + (rf !== null ? '<div class="sim-line"><span>Amortissement utilis\u00e9 (limit\u00e9 \u00e0 vos revenus fonciers)</span><strong>' + fmt(deduit) + '</strong></div>' : '')
+                    + '<div class="sim-line"><span>Taux d\'imposition \u00e9vit\u00e9 (TMI ' + tmi + ' % + pr\u00e9l\u00e8vements sociaux 17,2 %)</span><strong>' + tauxGlobal.toLocaleString('fr-FR') + ' %</strong></div>'
+                    + (rf === null ? '<div class="sim-note">Estimation maximale : elle suppose que vos revenus fonciers (loyers du bien compris) sont suffisants pour absorber tout l\'amortissement. Renseignez-les pour affiner le calcul.</div>' : '')
+                    + (rf !== null && rf < amort ? '<div class="sim-note">Vos revenus fonciers ne permettent d\'utiliser que ' + fmt(deduit) + ' d\'amortissement cette ann\u00e9e. L\'exc\u00e9dent n\'est pas pris en compte dans cette estimation.</div>' : '')
+                    + '<div class="sim-note">\u00c0 la revente, les amortissements d\u00e9duits sont r\u00e9int\u00e9gr\u00e9s dans le calcul de la plus-value : l\'avantage est en partie un report d\'imposition. Simulation pour un logement neuf ; dans l\'ancien r\u00e9nov\u00e9, les taux sont de 3 \u00e0 4 %. <a href="/blog/dispositif-jeanbrun-statut-bailleur-prive" style="color:var(--or);">Tout comprendre sur le dispositif Jeanbrun</a>.</div>';
             }
 
             document.getElementById('simAmount').textContent = fmt(eco) + ' d\'\u00e9conomie';
