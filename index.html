@@ -21,7 +21,7 @@
     <link rel="canonical" href="https://www.lcpatrimoine.net">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
-    <link rel="stylesheet" href="style.css?v=27">
+    <link rel="stylesheet" href="style.css?v=28">
 
     <meta property="og:title" content="LC Patrimoine — Gestion de patrimoine en Île-de-France">
     <meta property="og:description" content="Cabinet indépendant. Simulateur d'économie d'impôt gratuit. Défiscalisation PER, Girardin, GFI, Denormandie. Placements, retraite, succession.">
@@ -285,10 +285,11 @@
                 <div class="sim-field">
                     <label for="situation">Situation familiale</label>
                     <select id="situation">
+                        <option value="" selected disabled>Sélectionnez votre situation</option>
                         <option value="s-1">Célibataire sans enfant</option>
-                        <option value="s-1.5">Célibataire avec 1 enfant</option>
-                        <option value="s-2">Célibataire avec 2 enfants</option>
-                        <option value="s-3">Célibataire avec 3 enfants</option>
+                        <option value="s-2">Célibataire avec 1 enfant</option>
+                        <option value="s-2.5">Célibataire avec 2 enfants</option>
+                        <option value="s-3.5">Célibataire avec 3 enfants</option>
                         <option value="c-2">Couple sans enfant</option>
                         <option value="c-2.5">Couple avec 1 enfant</option>
                         <option value="c-3">Couple avec 2 enfants</option>
@@ -325,6 +326,7 @@
                 <div class="sim-field" id="jeanbrunLoyerField" style="display:none;">
                     <label for="jeanbrunLoyer">Niveau de loyer</label>
                     <select id="jeanbrunLoyer">
+                        <option value="" selected disabled>Sélectionnez le niveau de loyer</option>
                         <option value="intermediaire">Intermédiaire (amortissement 3,5 %/an)</option>
                         <option value="social">Social (4,5 %/an)</option>
                         <option value="tres-social">Très social (5,5 %/an)</option>
@@ -332,7 +334,7 @@
                 </div>
                 <div class="sim-field" id="jeanbrunFonciersField" style="display:none;">
                     <label for="revenusFonciers">Revenus fonciers nets annuels (&euro;, facultatif)</label>
-                    <input type="number" id="revenusFonciers" placeholder="Loyers du bien compris, après charges et intérêts" min="0" step="500">
+                    <input type="number" id="revenusFonciers" placeholder="Ex : 6 000 (0 si aucun)" min="0" step="500">
                 </div>
                 <div class="sim-field">
                     <label for="investissement">Montant envisagé (&euro;)</label>
@@ -564,6 +566,10 @@
             { seuil: Infinity, taux: 0.45 }
         ];
         var PLAFOND_QF = 1807; // par demi-part supplémentaire (barème 2026)
+        var PLAFOND_PARENT_ISOLE = 4262; // première part entière du parent isolé (case T)
+        var DECOTE_SEUL = 897, DECOTE_COUPLE = 1483, DECOTE_TAUX = 0.4525;
+        var MONTANT_MIN = 1000, MONTANT_MAX = 10000000, REVENU_MAX = 10000000;
+        var PLAFOND_DEFICIT_FONCIER = 10700;
 
         function calcImpotBrut(revenu, parts) {
             var q = revenu / parts, impot = 0, prev = 0;
@@ -573,21 +579,26 @@
                 impot += (t.seuil - prev) * t.taux;
                 prev = t.seuil;
             }
-            return Math.round(impot * parts);
+            return impot * parts;
         }
 
-        function calcImpot(revenu, parts, isCouple) {
+        function calcImpot(revenu, parts, isCouple, isParentIsole) {
+            revenu = Math.max(0, revenu);
             var partsRef = isCouple ? 2 : 1;
             var demiPartsSupp = (parts - partsRef) / 0.5;
-            if (demiPartsSupp <= 0) return Math.max(0, calcImpotBrut(revenu, parts));
-            var impotAvecQF = calcImpotBrut(revenu, parts);
-            var impotSansQF = calcImpotBrut(revenu, partsRef);
-            var avantageQF = impotSansQF - impotAvecQF;
-            var plafond = demiPartsSupp * PLAFOND_QF;
-            if (avantageQF > plafond) {
-                return Math.max(0, impotSansQF - plafond);
+            var impot = calcImpotBrut(revenu, parts);
+            if (demiPartsSupp > 0) {
+                // Plafonnement du quotient familial
+                var impotSansQF = calcImpotBrut(revenu, partsRef);
+                var plafond = isParentIsole
+                    ? PLAFOND_PARENT_ISOLE + (demiPartsSupp - 2) * PLAFOND_QF
+                    : demiPartsSupp * PLAFOND_QF;
+                if (impotSansQF - impot > plafond) impot = impotSansQF - plafond;
             }
-            return Math.max(0, impotAvecQF);
+            // Décote
+            var seuilDecote = isCouple ? DECOTE_COUPLE : DECOTE_SEUL;
+            if (impot < seuilDecote / DECOTE_TAUX) impot = impot - (seuilDecote - DECOTE_TAUX * impot);
+            return Math.max(0, Math.round(impot));
         }
 
         function getTMI(revenu, parts) {
@@ -610,21 +621,91 @@
 
         function parseSituation() {
             var val = document.getElementById('situation').value;
+            if (!val) return null;
             var isCouple = val.charAt(0) === 'c';
             var parts = parseFloat(val.split('-')[1]);
-            return { parts: parts, isCouple: isCouple };
+            return { parts: parts, isCouple: isCouple, isParentIsole: !isCouple && parts > 1 };
         }
 
+        // Lit un champ numérique : null si vide ; « 45.000 » est lu comme 45 000 (point des milliers)
+        function lireNombre(id) {
+            var brut = String(document.getElementById(id).value).trim();
+            if (brut === '') return null;
+            if (/^-?\d{1,3}(\.\d{3})+$/.test(brut)) brut = brut.replace(/\./g, '');
+            var n = parseFloat(brut);
+            return isNaN(n) ? null : n;
+        }
+
+        function afficherErreur(id, message) {
+            var champ = document.getElementById(id);
+            var err = document.getElementById('err-' + id);
+            if (!err) {
+                err = document.createElement('div');
+                err.id = 'err-' + id;
+                err.className = 'sim-error';
+                champ.parentNode.appendChild(err);
+            }
+            err.textContent = message;
+            champ.classList.add('sim-invalid');
+        }
+
+        function effacerErreurs() {
+            var errs = document.querySelectorAll('.sim-box .sim-error');
+            for (var i = 0; i < errs.length; i++) errs[i].textContent = '';
+            var invalides = document.querySelectorAll('.sim-box .sim-invalid');
+            for (var j = 0; j < invalides.length; j++) invalides[j].classList.remove('sim-invalid');
+        }
+
+        function masquerResultat() {
+            document.getElementById('simResult').classList.remove('visible');
+        }
+
+        // Toute modification du formulaire efface le résultat précédent
+        (function () {
+            var champs = document.querySelectorAll('.sim-box input, .sim-box select');
+            for (var i = 0; i < champs.length; i++) {
+                champs[i].addEventListener('input', masquerResultat);
+                champs[i].addEventListener('change', masquerResultat);
+            }
+        })();
+
+        // Présélection du dispositif depuis un lien (ex. /?simu=jeanbrun#simulateur)
+        (function () {
+            var m = /[?&]simu=([a-z]+)/.exec(window.location.search);
+            if (!m) return;
+            var select = document.getElementById('dispositif');
+            for (var i = 0; i < select.options.length; i++) {
+                if (select.options[i].value === m[1]) { select.value = m[1]; toggleMoisInvest(); break; }
+            }
+        })();
+
         function simuler() {
-            var revenu = parseFloat(document.getElementById('revenu').value);
+            effacerErreurs();
+            var dispo = document.getElementById('dispositif').value;
+            var revenu = lireNombre('revenu');
+            var invest = lireNombre('investissement');
             var sit = parseSituation();
+            var erreur = false;
+            if (revenu === null) { afficherErreur('revenu', 'Indiquez votre revenu net imposable.'); erreur = true; }
+            else if (revenu < 0) { afficherErreur('revenu', 'Le revenu ne peut pas \u00eatre n\u00e9gatif.'); erreur = true; }
+            else if (revenu > REVENU_MAX) { afficherErreur('revenu', 'Revenu trop \u00e9lev\u00e9 pour ce simulateur (maximum ' + fmt(REVENU_MAX) + ').'); erreur = true; }
+            if (!sit) { afficherErreur('situation', 'S\u00e9lectionnez votre situation familiale.'); erreur = true; }
+            if (dispo === 'jeanbrun') {
+                if (!document.getElementById('jeanbrunLoyer').value) { afficherErreur('jeanbrunLoyer', 'S\u00e9lectionnez le niveau de loyer.'); erreur = true; }
+                var rfSaisi = lireNombre('revenusFonciers');
+                if (rfSaisi !== null && rfSaisi < 0) { afficherErreur('revenusFonciers', 'Les revenus fonciers ne peuvent pas \u00eatre n\u00e9gatifs.'); erreur = true; }
+                else if (rfSaisi !== null && rfSaisi > REVENU_MAX) { afficherErreur('revenusFonciers', 'Montant trop \u00e9lev\u00e9 (maximum ' + fmt(REVENU_MAX) + ').'); erreur = true; }
+            }
+            if (invest === null) { afficherErreur('investissement', 'Indiquez le montant envisag\u00e9.'); erreur = true; }
+            else if (invest < 0) { afficherErreur('investissement', 'Le montant ne peut pas \u00eatre n\u00e9gatif.'); erreur = true; }
+            else if (invest < MONTANT_MIN) { afficherErreur('investissement', 'Montant minimum : ' + fmt(MONTANT_MIN) + '.'); erreur = true; }
+            else if (invest > MONTANT_MAX) { afficherErreur('investissement', 'Montant maximum : ' + fmt(MONTANT_MAX) + '.'); erreur = true; }
+            if (erreur) { masquerResultat(); return; }
+
             var parts = sit.parts;
             var isCouple = sit.isCouple;
-            var invest = parseFloat(document.getElementById('investissement').value);
-            var dispo = document.getElementById('dispositif').value;
-            if (!revenu || !invest) { alert('Veuillez remplir tous les champs.'); return; }
-
-            var impotAvant = calcImpot(revenu, parts, isCouple);
+            var isParentIsole = sit.isParentIsole;
+            var impotAvant = calcImpot(revenu, parts, isCouple, isParentIsole);
             var tmi = getTMI(revenu, parts);
             var eco = 0, detail = '', breakdown = '';
 
@@ -634,7 +715,7 @@
                 var plafond = Math.max(plafondCalc, 4710);
                 var versement = Math.min(invest, plafond);
                 var revenuApres = revenu - versement;
-                var impotApres = calcImpot(revenuApres, parts, isCouple);
+                var impotApres = calcImpot(revenuApres, parts, isCouple, isParentIsole);
                 eco = impotAvant - impotApres;
                 detail = 'Économie dès la 1ère année grâce à la déduction de votre versement PER';
                 breakdown = '<div class="sim-line"><span>Votre TMI (tranche marginale)</span><strong>' + tmi + ' %</strong></div>'
@@ -722,31 +803,40 @@
             }
 
             else if (dispo === 'jeanbrun') {
-                // Jeanbrun (neuf) : amortissement de 80 % du prix, taux et plafond selon le niveau de loyer
+                // Jeanbrun (neuf) : amortissement de 80 % du prix, taux et plafond selon le niveau de loyer.
+                // Le déficit foncier créé s'impute sur le revenu global (droit commun, 10 700 €/an).
                 var niveaux = {
-                    'intermediaire': { taux: 0.035, plafond: 8000, nom: 'interm\u00e9diaire' },
+                    'intermediaire': { taux: 0.035, plafond: 8000, nom: 'intermédiaire' },
                     'social': { taux: 0.045, plafond: 10000, nom: 'social' },
-                    'tres-social': { taux: 0.055, plafond: 12000, nom: 'tr\u00e8s social' }
+                    'tres-social': { taux: 0.055, plafond: 12000, nom: 'très social' }
                 };
                 var niv = niveaux[document.getElementById('jeanbrunLoyer').value];
-                var base = Math.round(invest * 0.80);
-                var amortCalc = Math.round(base * niv.taux);
+                var rf = lireNombre('revenusFonciers') || 0;
+                var base = invest * 0.80;
+                var amortCalc = base * niv.taux;
                 var amort = Math.min(amortCalc, niv.plafond);
-                var rfSaisi = document.getElementById('revenusFonciers').value;
-                var rf = rfSaisi === '' ? null : Math.max(0, parseFloat(rfSaisi) || 0);
-                var deduit = rf === null ? amort : Math.min(amort, rf);
-                var tauxGlobal = tmi + 17.2;
-                eco = Math.round(deduit * tauxGlobal / 100);
-                detail = '\u00c9conomie annuelle estim\u00e9e (Jeanbrun), soit ' + fmt(eco * 9) + ' sur les 9 ans d\'engagement';
+                var solde = rf - amort;
+                var deficit = Math.max(0, -solde);
+                var deficitImpute = Math.min(deficit, PLAFOND_DEFICIT_FONCIER);
+                var deficitReporte = deficit - deficitImpute;
+                var irSans = calcImpot(revenu + rf, parts, isCouple, isParentIsole);
+                var irAvec = calcImpot(revenu + Math.max(0, solde) - deficitImpute, parts, isCouple, isParentIsole);
+                var gainIR = irSans - irAvec;
+                var gainPS = Math.round(0.172 * (rf - Math.max(0, solde)));
+                eco = gainIR + gainPS;
+                detail = 'Économie annuelle estimée, soit ' + fmt(eco * 9) + ' sur les 9 ans d\'engagement (situation supposée constante)';
                 breakdown = '<div class="sim-line"><span>Prix du bien</span><strong>' + fmt(invest) + '</strong></div>'
                     + '<div class="sim-line"><span>Base amortissable (80 %)</span><strong>' + fmt(base) + '</strong></div>'
                     + '<div class="sim-line"><span>Amortissement annuel (loyer ' + niv.nom + ', ' + (niv.taux * 100).toLocaleString('fr-FR') + ' %)</span><strong>' + fmt(amort) + '</strong></div>'
-                    + (amortCalc > niv.plafond ? '<div class="sim-note">Amortissement plafonn\u00e9 \u00e0 ' + fmt(niv.plafond) + ' par an pour un loyer ' + niv.nom + '.</div>' : '')
-                    + (rf !== null ? '<div class="sim-line"><span>Amortissement utilis\u00e9 (limit\u00e9 \u00e0 vos revenus fonciers)</span><strong>' + fmt(deduit) + '</strong></div>' : '')
-                    + '<div class="sim-line"><span>Taux d\'imposition \u00e9vit\u00e9 (TMI ' + tmi + ' % + pr\u00e9l\u00e8vements sociaux 17,2 %)</span><strong>' + tauxGlobal.toLocaleString('fr-FR') + ' %</strong></div>'
-                    + (rf === null ? '<div class="sim-note">Estimation maximale : elle suppose que vos revenus fonciers (loyers du bien compris) sont suffisants pour absorber tout l\'amortissement. Renseignez-les pour affiner le calcul.</div>' : '')
-                    + (rf !== null && rf < amort ? '<div class="sim-note">Vos revenus fonciers ne permettent d\'utiliser que ' + fmt(deduit) + ' d\'amortissement cette ann\u00e9e. L\'exc\u00e9dent n\'est pas pris en compte dans cette estimation.</div>' : '')
-                    + '<div class="sim-note">\u00c0 la revente, les amortissements d\u00e9duits sont r\u00e9int\u00e9gr\u00e9s dans le calcul de la plus-value : l\'avantage est en partie un report d\'imposition. Simulation pour un logement neuf ; dans l\'ancien r\u00e9nov\u00e9, les taux sont de 3 \u00e0 4 %. <a href="/blog/dispositif-jeanbrun-statut-bailleur-prive" style="color:var(--or);">Tout comprendre sur le dispositif Jeanbrun</a>.</div>';
+                    + (amortCalc > niv.plafond ? '<div class="sim-note">Amortissement plafonné à ' + fmt(niv.plafond) + ' par an pour un loyer ' + niv.nom + '.</div>' : '')
+                    + '<div class="sim-line"><span>Revenus fonciers nets</span><strong>' + fmt(rf) + '</strong></div>'
+                    + (deficit > 0 ? '<div class="sim-line"><span>Déficit foncier imputé sur le revenu global</span><strong>' + fmt(deficitImpute) + '</strong></div>' : '')
+                    + '<div class="sim-line"><span>Impôt sur le revenu sans / avec Jeanbrun</span><strong>' + fmt(irSans) + ' / ' + fmt(irAvec) + '</strong></div>'
+                    + '<div class="sim-line"><span>Gain d\'impôt sur le revenu</span><strong>' + fmt(gainIR) + '</strong></div>'
+                    + '<div class="sim-line"><span>Gain de prélèvements sociaux (17,2 %)</span><strong>' + fmt(gainPS) + '</strong></div>'
+                    + (deficitReporte > 0 ? '<div class="sim-note">Le déficit dépasse le plafond annuel de ' + fmt(PLAFOND_DEFICIT_FONCIER) + ' : les ' + fmt(deficitReporte) + ' restants sont reportables sur vos revenus fonciers des 10 années suivantes (non valorisés ici).</div>' : '')
+                    + '<div class="sim-note">Revenus fonciers nets : loyers perçus moins charges et intérêts d\'emprunt. La part de déficit due aux intérêts d\'emprunt n\'est imputable que sur les revenus fonciers : elle n\'est pas prise en compte ici.</div>'
+                    + '<div class="sim-note">À la revente, les amortissements déduits sont réintégrés dans le calcul de la plus-value : l\'avantage est en partie un report d\'imposition. Simulation pour un logement neuf ; dans l\'ancien rénové, les taux sont de 3 à 4 %. <a href="/blog/dispositif-jeanbrun-statut-bailleur-prive" style="color:var(--or);">Tout comprendre sur le dispositif Jeanbrun</a>.</div>';
             }
 
             document.getElementById('simAmount').textContent = fmt(eco) + ' d\'\u00e9conomie';

@@ -822,6 +822,9 @@ section { padding: 80px 0; scroll-margin-top: 140px; }
 .sim-field input:focus,
 .sim-field select:focus { border-color: var(--or); }
 .sim-field select option { background: var(--bleu-nuit); color: var(--blanc); }
+.sim-field .sim-invalid { border-color: #F08A7E; }
+.sim-error { color: #F4A99F; font-size: 0.82rem; margin-top: 6px; }
+.sim-error:empty { display: none; }
 
 .sim-result {
     background: rgba(201,168,76,0.12);
