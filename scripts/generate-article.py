@@ -18,7 +18,7 @@ BLOG_DIR = "blog"
 BLOG_HTML = "blog.html"
 SITEMAP = "sitemap.xml"
 SITE_URL = "https://www.lcpatrimoine.net"
-STYLE_VERSION = "28"
+STYLE_VERSION = "29"
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 
@@ -125,7 +125,17 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
         "headline": "{title}",
         "author": {{
             "@type": "Person",
-            "name": "Carine Savajols"
+            "name": "Carine Savajols",
+            "jobTitle": "Conseillère en gestion de patrimoine",
+            "url": "https://www.lcpatrimoine.net/#apropos",
+            "sameAs": ["https://www.linkedin.com/in/carinesavajols/"],
+            "worksFor": {{
+                "@type": "Organization",
+                "name": "LC Patrimoine",
+                "url": "https://www.lcpatrimoine.net",
+                "identifier": {{"@type": "PropertyValue", "propertyID": "ORIAS", "value": "23008103"}},
+                "memberOf": {{"@type": "Organization", "name": "CNCGP"}}
+            }}
         }},
         "publisher": {{
             "@type": "Organization",
@@ -151,7 +161,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
                 <li><a href="/blog">Blog</a></li>
                 <li><a href="/#contact" class="nav-cta">Bilan gratuit</a></li>
             </ul>
-            <a href="tel:+33622187828" onclick="gtag('event','conversion',{'send_to':'AW-18220726621/Dy7pCLi-6LscEN3yqPBD','event_callback':function(){window.location=this.getAttribute('href');}.bind(this)}); return false;" class="nav-call" aria-label="Appeler LC Patrimoine"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><span>06&nbsp;22&nbsp;18&nbsp;78&nbsp;28</span></a><button class="menu-toggle" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+            <a href="tel:+33622187828" onclick="gtag('event','conversion',{{'send_to':'AW-18220726621/Dy7pCLi-6LscEN3yqPBD','event_callback':function(){{window.location=this.getAttribute('href');}}.bind(this)}}); return false;" class="nav-call" aria-label="Appeler LC Patrimoine"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><span>06&nbsp;22&nbsp;18&nbsp;78&nbsp;28</span></a><button class="menu-toggle" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
         </div>
     </nav>
 
@@ -166,6 +176,17 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
     <section class="page-content">
         <div class="container">
 {body_html}
+
+            <div class="author-box">
+                <img src="../photo-carine.jpg" alt="Carine Savajols, fondatrice de LC Patrimoine" width="88" height="88" loading="lazy">
+                <div>
+                    <div class="author-name">Carine Savajols</div>
+                    <div class="author-role">Fondatrice de LC Patrimoine, conseillère en gestion de patrimoine indépendante à Saint-Maur-des-Fossés</div>
+                    <p>Après plus de 25 ans en gestion des risques au sein d'une grande société américaine, Carine accompagne ses clients en toute indépendance, en choisissant librement les partenaires et les solutions les mieux adaptés à chaque situation.</p>
+                    <p class="author-reg">Courtier en opérations d'assurance · <a href="https://www.orias.fr" target="_blank" rel="noopener">ORIAS n°&nbsp;23008103</a> · Membre de la&nbsp;CNCGP</p>
+                    <p class="author-links"><a href="/#apropos">En savoir plus sur Carine →</a><a href="https://www.linkedin.com/in/carinesavajols/" target="_blank" rel="noopener">LinkedIn</a></p>
+                </div>
+            </div>
 
             <div class="cta-box">
                 <h3>Besoin d'un accompagnement personnalisé ?</h3>
@@ -205,7 +226,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
                 <div>
                     <h4>Contact</h4>
                     <ul class="footer-links">
-                        <li><a href="tel:+33622187828" onclick="gtag('event','conversion',{'send_to':'AW-18220726621/Dy7pCLi-6LscEN3yqPBD','event_callback':function(){window.location=this.getAttribute('href');}.bind(this)}); return false;" style="color:inherit;text-decoration:none;">06 22 18 78 28</a></li>
+                        <li><a href="tel:+33622187828" onclick="gtag('event','conversion',{{'send_to':'AW-18220726621/Dy7pCLi-6LscEN3yqPBD','event_callback':function(){{window.location=this.getAttribute('href');}}.bind(this)}}); return false;" style="color:inherit;text-decoration:none;">06 22 18 78 28</a></li>
                         <li>75 Rue Marignan</li>
                         <li>94210 Saint-Maur-des-Fossés</li>
                     </ul>
@@ -241,7 +262,7 @@ def add_blog_card(slug, title, summary, pub_date):
 
     card = f'''
                 <!-- {format_date_fr(pub_date)} -->
-                <a href="blog/{slug}.html" class="blog-card" style="text-decoration:none;">{img_tag}
+                <a href="/blog/{slug}" class="blog-card" style="text-decoration:none;">{img_tag}
                     <div class="blog-card-body">
                         <div class="blog-card-date">{format_date_fr(pub_date)}</div>
                         <h3>{title}</h3>

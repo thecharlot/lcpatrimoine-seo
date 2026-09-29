@@ -653,6 +653,36 @@ section { padding: 80px 0; scroll-margin-top: 140px; }
     margin: 0 auto 20px;
 }
 
+.author-box {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    background: var(--gris-clair);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 40px 0 24px;
+}
+.author-box img {
+    width: 88px;
+    height: 88px;
+    flex-shrink: 0;
+    object-fit: cover;
+    object-position: center 30%;
+    border-radius: 50%;
+    border: 3px solid var(--bleu-nuit);
+}
+.author-box .author-name { font-weight: 700; font-size: 1.1rem; color: var(--bleu-nuit); }
+.author-box .author-role { font-size: 0.9rem; color: var(--gris); margin: 2px 0 10px; }
+.author-box p { font-size: 0.95rem; margin: 0 0 8px; }
+.author-box .author-reg { font-size: 0.82rem; color: var(--gris); }
+.author-box .author-reg a { color: inherit; }
+.author-box .author-links { margin: 0; }
+.author-box .author-links a { font-size: 0.9rem; font-weight: 600; color: var(--bleu-nuit); margin-right: 16px; }
+@media (max-width: 600px) {
+    .author-box { flex-direction: column; align-items: center; text-align: center; }
+    .author-box .author-links a { margin: 0 8px; }
+}
+
 .about-photo h3 {
     color: var(--bleu-nuit);
     font-size: 1.3rem;
