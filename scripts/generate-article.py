@@ -18,7 +18,7 @@ BLOG_DIR = "blog"
 BLOG_HTML = "blog.html"
 SITEMAP = "sitemap.xml"
 SITE_URL = "https://www.lcpatrimoine.net"
-STYLE_VERSION = "30"
+STYLE_VERSION = "31"
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 
@@ -204,7 +204,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
                     <p>Cabinet indépendant de gestion de patrimoine en Île-de-France. Bilan patrimonial gratuit.</p>
                 </div>
                 <div>
-                    <h4>Nos services</h4>
+                    <h4>Services</h4>
                     <ul class="footer-links">
                         <li><a href="/defiscalisation">Défiscalisation</a></li>
                         <li><a href="/investissement">Investissement</a></li>
@@ -349,6 +349,7 @@ def main():
 **Domaines** : défiscalisation, investissement, retraite, transmission, assurance emprunteur.
 **Outils à mettre en avant** : PER, Girardin, GFI, Denormandie, assurance-vie, SCPI, contrat de capitalisation, LMNP, démembrement, SCI, assurance emprunteur.
 **Ton** : accessible, concret, professionnel mais pas jargonneux. Tu tutoies pas le lecteur, tu le vouvoies.
+**Voix** : c'est Carine qui parle, à la première personne du singulier (« je », « mon accompagnement »). N'utilise jamais « nous », « notre », « nos » ni « on » pour désigner le cabinet : LC Patrimoine est un cabinet indépendant tenu par une seule personne. Un « on » impersonnel (« on conserve souvent… ») reste possible.
 **Sources** : quand tu cites un chiffre, une loi, une étude ou une info factuelle importante, ajoute un lien source dans le HTML (balise <a href="..." target="_blank">). Utilise les liens des actualités ci-dessus ou des sources officielles (INSEE, service-public.fr, legifrance.gouv.fr, Banque de France, etc.).
 **IMPORTANT** : Nous sommes en {today[:4]}. Ne fais JAMAIS référence à des événements d'années passées comme s'ils étaient actuels.
 **IMPORTANT** : Ne parle JAMAIS de "premier rendez-vous". L'offre est "bilan et rendez-vous gratuits" (pas de notion de "premier").
