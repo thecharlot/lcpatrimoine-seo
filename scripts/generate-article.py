@@ -18,7 +18,7 @@ BLOG_DIR = "blog"
 BLOG_HTML = "blog.html"
 SITEMAP = "sitemap.xml"
 SITE_URL = "https://www.lcpatrimoine.net"
-STYLE_VERSION = "31"
+STYLE_VERSION = "34"
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 

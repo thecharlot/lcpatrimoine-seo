@@ -21,7 +21,7 @@
     <link rel="canonical" href="https://www.lcpatrimoine.net">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
-    <link rel="stylesheet" href="style.css?v=31">
+    <link rel="stylesheet" href="style.css?v=34">
 
     <meta property="og:title" content="LC Patrimoine, gestion de patrimoine à Saint-Maur-des-Fossés (94)">
     <meta property="og:description" content="Cabinet indépendant. Simulateur d'économie d'impôt gratuit. Défiscalisation PER, Girardin, GFI, Denormandie. Placements, retraite, succession.">
@@ -132,7 +132,8 @@
                 <h1>Votre patrimoine mérite <em>un vrai conseil</em></h1>
                 <p>Moins d'impôts, une épargne qui travaille, une retraite préparée. Forte de 25 ans d'expérience en finance, je vous accompagne en toute indépendance depuis <span style="white-space:nowrap">Saint-Maur-des-Fossés</span>, dans tout le Val-de-Marne, en <span style="white-space:nowrap">Île-de-France</span> et en visio.</p>
                 <div class="hero-buttons">
-                    <a href="#objectifs" class="btn-secondary">Découvrir mes services</a>
+                    <a href="#contact" class="btn-primary">Demander mon bilan gratuit</a>
+                    <a href="#objectifs" class="btn-secondary">Voir mes services</a>
                 </div>
             </div>
             <div class="hero-portrait">
@@ -140,10 +141,6 @@
                 <div>
                     <div class="hero-portrait-name">Carine Savajols</div>
                     <div class="hero-portrait-role">Conseillère en gestion de patrimoine indépendante</div>
-                    <div class="hero-portrait-facts">
-                        <span><strong>25 ans</strong> d'expérience en finance</span>
-                        <span><strong>Bilan offert</strong>, sans engagement</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -914,6 +911,16 @@
                 }, 200);
             });
         }
+    </script>
+    <script>
+        // Masque « Bilan gratuit » du menu tant que les boutons du hero sont à l'écran
+        (function () {
+            var heroCta = document.querySelector('.hero-buttons');
+            if (!heroCta || !('IntersectionObserver' in window)) return;
+            new IntersectionObserver(function (entries) {
+                document.body.classList.toggle('hero-cta-visible', entries[0].isIntersecting);
+            }).observe(heroCta);
+        })();
     </script>
 </body>
 </html>

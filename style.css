@@ -130,6 +130,12 @@ nav .container {
 
 .nav-cta:hover { background: var(--or-clair) !important; }
 
+/* Accueil : le bouton du menu s'efface tant que les boutons du hero sont visibles (évite le doublon) */
+@media (min-width: 1081px) {
+    .nav-cta { transition: background 0.3s, opacity 0.3s, visibility 0.3s !important; }
+    body.hero-cta-visible .nav-cta { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
 .nav-linkedin {
     display: flex;
     align-items: center;
@@ -300,9 +306,19 @@ nav .container {
 
 .hero-buttons {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     flex-wrap: wrap;
 }
+
+/* Boutons du hero : même gabarit (taille, bordure, hauteur) */
+.hero-buttons .btn-primary,
+.hero-buttons .btn-secondary {
+    padding: 14px 24px;
+    font-size: 1rem;
+    border-width: 2px;
+    border-style: solid;
+}
+.hero-buttons .btn-primary { border-color: var(--or); }
 
 .hero-stats {
     display: grid;
@@ -354,29 +370,11 @@ nav .container {
 }
 .hero-portrait-name { color: var(--blanc); font-size: 1.4rem; font-weight: 700; }
 .hero-portrait-role { color: rgba(255,255,255,0.75); font-size: 1rem; margin-top: 4px; }
-.hero-portrait-facts {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 18px;
-}
-.hero-portrait-facts span {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 50px;
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    color: rgba(255,255,255,0.8);
-}
-.hero-portrait-facts strong { color: var(--or); }
 @media (max-width: 900px) {
     .hero-portrait { flex-direction: row; align-items: center; text-align: left; gap: 18px; margin-top: 8px; }
     .hero-portrait img { width: 110px; height: 110px; margin-bottom: 0; border-width: 3px; flex-shrink: 0; }
     .hero-portrait-name { font-size: 1.15rem; }
     .hero-portrait-role { font-size: 0.9rem; }
-    .hero-portrait-facts { justify-content: flex-start; gap: 6px; margin-top: 10px; }
-    .hero-portrait-facts span { padding: 5px 12px; font-size: 0.8rem; }
 }
 
 /* ─── Page Hero (inner pages) ─── */
@@ -1368,6 +1366,7 @@ footer h4 {
     .stat-card .number { font-size: 1.4rem; }
     .services-grid { grid-template-columns: 1fr; }
     .hero-buttons { flex-direction: column; align-items: center; }
+    .hero-buttons a { width: 100%; max-width: 320px; text-align: center; }
     .form-row { grid-template-columns: 1fr; }
     .sim-box { padding: 28px 20px; }
     .footer-grid { grid-template-columns: 1fr; }
