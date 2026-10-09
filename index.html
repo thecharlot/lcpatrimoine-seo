@@ -917,9 +917,11 @@
         (function () {
             var heroCta = document.querySelector('.hero-buttons');
             if (!heroCta || !('IntersectionObserver' in window)) return;
+            // La zone sous le menu fixe ne compte pas : des boutons cachés derrière lui ne sont pas « visibles »
+            var navH = document.querySelector('nav').offsetHeight;
             new IntersectionObserver(function (entries) {
                 document.body.classList.toggle('hero-cta-visible', entries[0].isIntersecting);
-            }).observe(heroCta);
+            }, { rootMargin: '-' + navH + 'px 0px 0px 0px' }).observe(heroCta);
         })();
     </script>
 </body>
