@@ -400,6 +400,7 @@ nav .container {
 .page-hero .breadcrumb {
     margin-bottom: 20px;
     font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
 }
 
 .page-hero .breadcrumb a {
@@ -410,6 +411,9 @@ nav .container {
 .page-hero .breadcrumb span {
     color: rgba(255,255,255,0.5);
 }
+
+/* Page 404 */
+.error-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
 
 /* ─── Trust bar ─── */
 .trust-bar {
