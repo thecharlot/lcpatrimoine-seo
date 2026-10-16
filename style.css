@@ -451,7 +451,7 @@ nav .container {
 }
 
 /* ─── Sections ─── */
-section { padding: 80px 0; scroll-margin-top: 140px; }
+section { padding: 80px 0; }
 
 .section-header {
     text-align: center;
@@ -1339,7 +1339,8 @@ footer h4 {
     .page-hero h1 { font-size: 1.6rem; }
     .section-header h2 { font-size: 1.6rem; }
     .apropos-title { font-size: 1.3rem !important; }
-    section { padding: 60px 0; scroll-margin-top: 140px; }
+    section { padding: 60px 0; }
+    html { scroll-padding-top: 96px; }
     .blog-grid { grid-template-columns: 1fr; }
     .logo img { height: 60px; }
     .nav-links { display: none; }

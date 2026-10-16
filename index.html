@@ -21,7 +21,7 @@
     <link rel="canonical" href="https://www.lcpatrimoine.net">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
-    <link rel="stylesheet" href="style.css?v=35">
+    <link rel="stylesheet" href="style.css?v=36">
 
     <meta property="og:title" content="LC Patrimoine, gestion de patrimoine à Saint-Maur-des-Fossés (94)">
     <meta property="og:description" content="Cabinet indépendant. Simulateur d'économie d'impôt gratuit. Défiscalisation PER, Girardin, GFI, Denormandie. Placements, retraite, succession.">
@@ -895,10 +895,18 @@
             window.scrollTo({ top: y, behavior: 'smooth' });
         }
 
-        document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+        // Liens internes « #section » et « /#section » (pied de page) : défilement calé sous le menu
+        document.querySelectorAll('a[href^="#"], a[href^="/#"]').forEach(function(a) {
             a.addEventListener('click', function(e) {
-                var t = document.querySelector(this.getAttribute('href'));
-                if (t) { e.preventDefault(); scrollToTarget(t); }
+                var h = this.getAttribute('href');
+                if (h.charAt(0) === '/') h = h.slice(1);
+                if (h.length < 2) return;
+                var t = document.querySelector(h);
+                if (t) {
+                    e.preventDefault();
+                    scrollToTarget(t);
+                    if (history.replaceState) history.replaceState(null, '', h);
+                }
             });
         });
 
