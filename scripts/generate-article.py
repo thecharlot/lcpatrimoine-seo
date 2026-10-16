@@ -18,7 +18,7 @@ BLOG_DIR = "blog"
 BLOG_HTML = "blog.html"
 SITEMAP = "sitemap.xml"
 SITE_URL = "https://www.lcpatrimoine.net"
-STYLE_VERSION = "36"
+STYLE_VERSION = "37"
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 
@@ -253,8 +253,17 @@ def format_date_fr(iso_date):
     return f"{int(d)} {months[int(m)]} {y}"
 
 
-def add_blog_card(slug, title, summary, pub_date):
-    """Insert a new blog card at the top of blog.html."""
+THEME_LABELS = {
+    "impots": "Impôts",
+    "epargne": "Épargne et placements",
+    "immobilier": "Immobilier",
+    "retraite": "Retraite",
+    "transmission": "Transmission",
+}
+
+
+def add_blog_card(slug, title, summary, pub_date, themes):
+    """Insert a new blog card at the top of blog.html (themes = keys of THEME_LABELS, used by the blog filters)."""
     with open(BLOG_HTML, "r", encoding="utf-8") as f:
         html = f.read()
 
@@ -262,9 +271,9 @@ def add_blog_card(slug, title, summary, pub_date):
 
     card = f'''
                 <!-- {format_date_fr(pub_date)} -->
-                <a href="/blog/{slug}" class="blog-card" style="text-decoration:none;">{img_tag}
+                <a href="/blog/{slug}" class="blog-card" data-themes="{' '.join(themes)}" style="text-decoration:none;">{img_tag}
                     <div class="blog-card-body">
-                        <div class="blog-card-date">{format_date_fr(pub_date)}</div>
+                        <div class="blog-card-date">{format_date_fr(pub_date)}<span class="blog-card-tag">{' · '.join(THEME_LABELS[t] for t in themes)}</span></div>
                         <h3>{title}</h3>
                         <p>{summary}</p>
                         <span class="service-link">Lire l'article →</span>
@@ -365,6 +374,7 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
 - "meta_description": description SEO (max 160 caractères)
 - "breadcrumb_short": mot-clé court pour le fil d'Ariane (ex: "PER", "SCPI", "Retraite")
 - "summary": résumé pour la carte blog (1-2 phrases, max 200 caractères)
+- "themes": liste de 1 ou 2 thèmes parmi "impots", "epargne", "immobilier", "retraite", "transmission" (le premier est le thème principal)
 - "body_html": le contenu HTML de l'article (utilise h2, p, ul/li, strong, div class="highlight-box" pour les astuces). Indente avec 12 espaces.
 - "linkedin_post": post LinkedIn de teasing (1-2 phrases, ton personnel comme si Carine écrivait, avec un lien vers l'article sous la forme {SITE_URL}/blog/[slug]). Max 300 caractères. Ajoute 2-3 hashtags pertinents."""
 
@@ -388,6 +398,7 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
     meta_description = data["meta_description"]
     breadcrumb_short = data["breadcrumb_short"]
     summary = data["summary"]
+    themes = [t for t in data.get("themes", []) if t in THEME_LABELS][:2] or ["epargne"]
     body_html = data["body_html"]
     linkedin_post = data["linkedin_post"]
 
@@ -403,7 +414,7 @@ Réponds UNIQUEMENT avec un JSON valide (sans blocs markdown) contenant ces clé
     print(f"Article written: {article_path}")
 
     # 4. Update blog.html with new card
-    add_blog_card(slug, title, summary, today)
+    add_blog_card(slug, title, summary, today, themes)
 
     # 6. Update sitemap.xml
     update_sitemap(slug, today)
