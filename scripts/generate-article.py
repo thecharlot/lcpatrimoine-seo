@@ -18,7 +18,7 @@ BLOG_DIR = "blog"
 BLOG_HTML = "blog.html"
 SITEMAP = "sitemap.xml"
 SITE_URL = "https://www.lcpatrimoine.net"
-STYLE_VERSION = "37"
+STYLE_VERSION = "38"
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 
@@ -204,7 +204,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
                     <p>Cabinet indépendant de gestion de patrimoine en Île-de-France. Bilan patrimonial gratuit.</p>
                 </div>
                 <div>
-                    <h4>Services</h4>
+                    <h3>Services</h3>
                     <ul class="footer-links">
                         <li><a href="/defiscalisation">Défiscalisation</a></li>
                         <li><a href="/investissement">Investissement</a></li>
@@ -215,7 +215,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
                     </ul>
                 </div>
                 <div>
-                    <h4>Navigation</h4>
+                    <h3>Navigation</h3>
                     <ul class="footer-links">
                         <li><a href="/#objectifs">Vos objectifs</a></li>
                         <li><a href="/#apropos">À propos</a></li>
@@ -224,7 +224,7 @@ def generate_article_html(title, slug, meta_description, breadcrumb_short, body_
                     </ul>
                 </div>
                 <div>
-                    <h4>Contact</h4>
+                    <h3>Contact</h3>
                     <ul class="footer-links">
                         <li><a href="tel:+33622187828" onclick="gtag('event','conversion',{{'send_to':'AW-18220726621/Dy7pCLi-6LscEN3yqPBD','event_callback':function(){{window.location=this.getAttribute('href');}}.bind(this)}}); return false;" style="color:inherit;text-decoration:none;">06 22 18 78 28</a></li>
                         <li>75 Rue Marignan</li>
@@ -274,7 +274,7 @@ def add_blog_card(slug, title, summary, pub_date, themes):
                 <a href="/blog/{slug}" class="blog-card" data-themes="{' '.join(themes)}" style="text-decoration:none;">{img_tag}
                     <div class="blog-card-body">
                         <div class="blog-card-date">{format_date_fr(pub_date)}<span class="blog-card-tag">{' · '.join(THEME_LABELS[t] for t in themes)}</span></div>
-                        <h3>{title}</h3>
+                        <h2>{title}</h2>
                         <p>{summary}</p>
                         <span class="service-link">Lire l'article →</span>
                     </div>
