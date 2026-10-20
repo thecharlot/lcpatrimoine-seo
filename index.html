@@ -21,7 +21,7 @@
     <link rel="canonical" href="https://www.lcpatrimoine.net">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
-    <link rel="stylesheet" href="style.css?v=38">
+    <link rel="stylesheet" href="style.css?v=39">
 
     <meta property="og:title" content="LC Patrimoine, gestion de patrimoine à Saint-Maur-des-Fossés (94)">
     <meta property="og:description" content="Cabinet indépendant. Simulateur d'économie d'impôt gratuit. Défiscalisation PER, Girardin, GFI, Denormandie. Placements, retraite, succession.">
@@ -86,6 +86,14 @@
                 "acceptedAnswer": {
                     "@type": "Answer",
                     "text": "Rien. Le bilan et le rendez-vous sont gratuits et sans engagement. Vous repartez avec des premières pistes concrètes, même si vous décidez de ne pas aller plus loin."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Comment êtes-vous rémunérée ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Je ne facture pas d'honoraires. Je suis rémunérée par une commission versée par l'assureur ou le partenaire, uniquement si vous souscrivez une solution que je vous ai proposée. Les frais vous sont toujours présentés avant toute souscription."
                 }
             },
             {
@@ -283,6 +291,7 @@
                     <p style="color:var(--gris); margin-bottom:16px;">Forte de plus de 25 ans dans le Risk Management auprès d'une importante société américaine, j'ai acquis une expertise solide et une compréhension financière approfondie. Aujourd'hui, je mets cette expérience au service de mes clients pour les aider à atteindre leurs objectifs financiers.</p>
                     <p style="color:var(--gris); margin-bottom:16px;"><strong style="color:var(--bleu-nuit);">Mes valeurs :</strong> transparence, intégrité et engagement. Je m'engage à fournir des conseils honnêtes et éclairés, en mettant toujours vos intérêts en premier.</p>
                     <p style="color:var(--gris);">Gestionnaire de patrimoine indépendante, je sélectionne en toute liberté les partenaires avec lesquels je travaille, ce qui me permet d'offrir des conseils véritablement impartiaux et des solutions sur-mesure, au plus près de vos besoins.</p>
+                    <p style="margin-top:16px;"><a href="/conseil-gestion-patrimoine" class="service-link">Mon accompagnement, ma rémunération et mon statut →</a></p>
                 </div>
             </div>
         </div>
@@ -386,6 +395,15 @@
                     </button>
                     <div class="faq-answer"><div class="faq-answer-inner">
                         Rien. Le bilan et le rendez-vous sont gratuits et sans engagement. Vous repartez avec des premières pistes concrètes, même si vous décidez de ne pas aller plus loin.
+                    </div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Comment êtes-vous rémunérée ?
+                        <span class="arrow">&#9660;</span>
+                    </button>
+                    <div class="faq-answer"><div class="faq-answer-inner">
+                        Je ne facture pas d'honoraires. Je suis rémunérée par une commission versée par l'assureur ou le partenaire, uniquement si vous souscrivez une solution que je vous ai proposée. Les frais vous sont toujours présentés avant toute souscription.
                     </div></div>
                 </div>
                 <div class="faq-item">
@@ -525,6 +543,7 @@
                 <div>
                     <h3>Services</h3>
                     <ul class="footer-links">
+                        <li><a href="/conseil-gestion-patrimoine">Conseil en gestion de patrimoine</a></li>
                         <li><a href="/defiscalisation">Défiscalisation</a></li>
                         <li><a href="/investissement">Investissement</a></li>
                         <li><a href="/immobilier">Immobilier</a></li>
@@ -889,7 +908,7 @@
             .then(function(data) {
                 if (data.success) {
                     var form = document.getElementById('contactForm');
-                    form.innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:3rem;margin-bottom:16px;color:var(--or)">&#10004;</div><h3 style="color:var(--bleu-nuit);margin-bottom:12px">Merci pour votre message !</h3><p style="color:var(--gris)">Nous vous recontactons sous 24h.</p></div>';
+                    form.innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:3rem;margin-bottom:16px;color:var(--or)">&#10004;</div><h3 style="color:var(--bleu-nuit);margin-bottom:12px">Merci pour votre message !</h3><p style="color:var(--gris)">Je vous recontacte sous 24 h.</p></div>';
                     form.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     gtag('event', 'conversion', {
                         'send_to': 'AW-18220726621/Dy7pCLi-6LscEN3yqPBD',

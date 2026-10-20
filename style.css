@@ -412,6 +412,8 @@ nav .container {
     color: rgba(255,255,255,0.5);
 }
 
+.page-hero-cta { margin-top: 28px; }
+
 /* Page 404 */
 .error-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
 
